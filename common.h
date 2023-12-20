@@ -46,8 +46,8 @@ struct Room
     std::string name;
     int status ;
     int timeDuration;
-    int score;
     std::string user;
+    int score;
     int numberQuestion;
 };
 
@@ -59,6 +59,7 @@ struct Room
 
 #define LOGIN "login"
 #define REGISTER "register"
+#define START_EXAM "start_exame"
 #define CREATE_ROOM "createroom"
 #define UPDATE_DURATION "update_duration"
 #define UPDATE_TIME_END_ROOM "update_time_end_room"

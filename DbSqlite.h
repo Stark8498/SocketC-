@@ -13,10 +13,12 @@ class DbSqlite
         bool insert_user_data(User &userinfor);
         bool get_question_info(std::vector<Question> &question);
         bool insert_question_data(Question &question);
+        bool insert_room_data(Room room);
         std::string get_path_file_limit();
         int search_id_user(User &user);
         bool get_room_info(std::vector <Room> &room);
         bool insert_room_data(Room &room);
+
 
 
     private:
