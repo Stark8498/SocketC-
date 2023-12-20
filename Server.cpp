@@ -1,6 +1,6 @@
 // Server.cpp
 #include "Server.h"
-#include "SqliteDatabase.h"
+#include "DbSqlite.h"
 
 Server::Server() : isConnected(true){
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -9,21 +9,17 @@ Server::Server() : isConnected(true){
         std::cerr << "Error creating socket\n";
         exit(EXIT_FAILURE);
     }
-
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_port = htons(8000);
-
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         std::cerr << "Error binding socket\n";
         exit(EXIT_FAILURE);
     }
-
     if (listen(serverSocket, 10) == -1) {
         std::cerr << "Error listening on socket\n";
         exit(EXIT_FAILURE);
     }
-
     std::cout << "Server is listening on port 8888...\n";
 }
 
@@ -86,7 +82,7 @@ void Server::start() {
             }
             else if (str_req == VIEW_RUSULT_ROOM)
             {
-                handleRegistration(clientSocket);
+                handleViewRusultRoom(clientSocket);
             }
             else if (str_req == START_EXAM)
             {
@@ -100,10 +96,10 @@ void Server::start() {
             {
                 handleTrainningMode(clientSocket);
             }
-            else if (str_req == NUMBER_QUESTION_TRAINING_MODE)
-            {
-                /* code */
-            }
+            // else if (str_req == NUMBER_QUESTION_TRAINING_MODE)
+            // {
+            //     /* code */
+            // }
             
         }       
         close(clientSocket);
@@ -119,9 +115,10 @@ void Server::handleLogin(int clientSocket) {
     // Extract username and password from the received string
     std::string credentials(buffer);
     size_t pos = credentials.find(':');
-    std::string username = credentials.substr(0, pos);
-    std::string password = credentials.substr(pos + 1);
-    if (SqliteDatabase::getInstance().getIdUser(username, password) != -1 )
+    User user;
+    user.username = credentials.substr(0, pos);
+    user.password = credentials.substr(pos + 1);
+    if (DbSqlite::getInstance()->search_id_user(user) != -1 )
     {
         const char* successMessage = "Ok";
         send(clientSocket, successMessage, strlen(successMessage), 0);
@@ -144,9 +141,10 @@ void Server::handleRegistration(int clientSocket) {
     // Extract new username and password from the received string
     std::string credentials(buffer);
     size_t pos = credentials.find(':');
-    std::string newUsername = credentials.substr(0, pos);
-    std::string newPassword = credentials.substr(pos + 1);
-     if (SqliteDatabase::getInstance().inserIntoTableUser(newUsername, newPassword))
+    User user;
+    user.username= credentials.substr(0, pos);
+    user.password = credentials.substr(pos + 1);
+    if (DbSqlite::getInstance()->insert_user_data(user))
     {
         const char* successMessage = "Registration successful";
         send(clientSocket, successMessage, strlen(successMessage), 0);
@@ -166,10 +164,9 @@ void Server::handleCreateExamRoom(int clientSocket) {
 }
 
 void Server::handleSetNumberOfQuestions(int clientSocket) {
-    std::cout << "Handling set number of questions request\n";
-    //insert number question
-    const char* responseMessage = "Number of questions set successfully";
-    send(clientSocket, responseMessage, strlen(responseMessage), 0);
+//     Room roominfo;
+//     send(clientSocket, &roominfo, sizeof(roominfo), 0);
+//     DbSqlite::getInstance()->insert_room_data(roominfo);
 }
 
 void Server::handleSetExamDuration(int clientSocket) {
@@ -180,9 +177,42 @@ void Server::handleSetExamDuration(int clientSocket) {
 }
 void Server::handleTrainningMode(int clientSocket)
 {
-    std::vector<Question> question = SqliteDatabase::getInstance().getQuestionTraining();
+    std::vector<Question> question ;
+    DbSqlite::getInstance()->get_question_info(question);
     send(clientSocket, &question[0], question.size() * sizeof(question), 0); 
 
 }
+void Server::handleJoinRoom(int clientSocket)
+{
+    std::vector<Room> roominfo;
+    std::vector<Room> roomAbleStart;
+    DbSqlite::getInstance()->get_room_info(roominfo);
+    for (size_t i = 0; i < roominfo.size(); i++)
+    {
+        if (roominfo[i].status == 1)
+        {
+            roomAbleStart.push_back(roominfo[i]);
+        }        
+    }
+    size_t vectorSize = roomAbleStart.size();
+    send(clientSocket, &vectorSize, sizeof(vectorSize), 0);
+    send(clientSocket, &roomAbleStart[0], roomAbleStart.size() * sizeof(roomAbleStart), 0); 
+    size_t roomNameLength;
+    recv(clientSocket, &roomNameLength, sizeof(roomNameLength), 0);
+    char buffer[1024]; 
+    recv(clientSocket, buffer, roomNameLength, 0);
+    std::string strRoomName(buffer, roomNameLength);
+    //change status room is pending
+    //
 
+
+
+    
+    
+}
+
+void Server::handleViewRusultRoom(int clientSocket)
+{
+    
+}
 

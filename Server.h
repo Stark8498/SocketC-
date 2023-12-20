@@ -19,8 +19,9 @@ public:
     void handleSetExamDuration(int clientSocket);
     void handleLogin(int clientSocket);
     void handleRegistration(int clientSocket);
-    void managerRoomExam(int clientSocket);
+    void handleViewRusultRoom(int clientSocket);
     void handleTrainningMode(int clientSocket);
+    void handleJoinRoom(int clienSocket);
     void closeConnected()
     {
         isConnected = false;

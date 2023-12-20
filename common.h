@@ -1,10 +1,61 @@
 #pragma one
 
+#include <vector>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sqlite3.h>
+#include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <vector>
+#include <sstream>
+#include <chrono>
+#include <thread>
+#include <chrono>
+#include <thread>
+#include <atomic>
+
 struct Question {
+    int id;
     std::string content;
-    std::string choices[4];
+    std::string choices1;
+    std::string choices2;
+    std::string choices3;
+    std::string choices4;
     int correctAnswer;
 };
+
+struct User {
+    int id;
+    std::string username;
+    std::string password;
+};
+
+/*  status: 0 = ok, 1 = tessing, 3 = end*/
+struct Room
+{
+    int id;
+    std::string name;
+    int status ;
+    int timeDuration;
+    int score;
+    std::string user;
+    int numberQuestion;
+};
+
+
+#define DB_DIR "user.db"
+#define MAX_SIZE 1000
+#define DB_FILE_NAME "user.fb"
+
 
 #define LOGIN "login"
 #define REGISTER "register"
