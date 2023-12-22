@@ -23,29 +23,29 @@
 #include <sqlite3.h>
 struct Question {
     int id;
-    std::string content;
-    std::string choices1;
-    std::string choices2;
-    std::string choices3;
-    std::string choices4;
+    char content[100];
+    char choices1[100];
+    char choices2[100];
+    char choices3[100];
+    char choices4[100];
     int correctAnswer;
 };
 
 struct User {
     int id;
-    std::string username;
-    std::string password;
+    char username[100];
+    char password[100];
 };
 
 /*  status: 0 = ok, 1 = tessing, 3 = end*/
 struct Room
 {
     int id;
-    std::string name;
+    char name[100];
     int status ;
     int timeDuration;
     int numberQuestion;
-    std::string user;
+    char user[100];
     int score;
 };
 
@@ -54,6 +54,7 @@ struct Room
 #define DB_FILE_NAME "user.db"
 
 
+#define PORT      8000
 
 #define LOGIN "login"
 #define REGISTER "register"
