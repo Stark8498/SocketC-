@@ -74,13 +74,13 @@ void Client::showTest(std::vector<Question> question, int timeDuration)
     std::cout << "Number of correct answers: " << correctAnswers << "/5" << std::endl;
 }
 
-int askQuestion(Question q)
+int Client::askQuestion(Question q)
 {
     std::cout << q.content << std::endl;
-    std::cout << ". " << q.choices1 << std::endl;
-    std::cout << ". " << q.choices2 << std::endl;
-    std::cout << ". " << q.choices3 << std::endl;
-    std::cout << ". " << q.choices4 << std::endl;
+    std::cout << q.choices1 << std::endl;
+    std::cout << q.choices2 << std::endl;
+    std::cout << q.choices3 << std::endl;
+    std::cout << q.choices4 << std::endl;
     int userAnswer;
     std::cout << "Chọn đáp án (1-4): ";
     std::cin >> userAnswer;
@@ -190,12 +190,16 @@ void Client::showSubMenu()
 void Client::createExamRoom()
 {
     Room roominfo;
+
     std::cout << "Enter new room name: ";
     std::cin >> roominfo.name;
+
     std::cout << "Enter time duration: ";
     std::cin >> roominfo.timeDuration;
+
     std::cout << "Enter new number of question : ";
     std::cin >> roominfo.numberQuestion;
+
     send(clientSocket, &roominfo, sizeof(roominfo), 0);
     std::cout << "Crate New Room OK";
 }
@@ -389,27 +393,22 @@ void Client::registerUser()
 
 void Client::joinRoom()
 {
-    // join room -> server response name romm when room has not start
-    //  "room1, room2, room3"
-    // Nhận kích thước của vector
-    size_t vectorSize;
-    recv(clientSocket, &vectorSize, sizeof(vectorSize), 0);
-    // Nhận vector của câu hỏi từ server
-    std::vector<Room> receivedroom(vectorSize);
-    recv(clientSocket, receivedroom.data(), vectorSize * sizeof(Question), 0);
-    for (size_t i = 0; i < receivedroom.size(); i++)
+    std::vector<Room> alreadyRoom;
+    recv(clientSocket, &alreadyRoom[0], alreadyRoom.size() * sizeof(alreadyRoom), 0);
+    for (size_t i = 0; i < alreadyRoom.size(); i++)
     {
-        std::cout << "List room name available: " << receivedroom[i].name << std::endl;
+        std::cout << "List room name available: " << alreadyRoom[i].name  << std::endl;        
     }
     
     std::string joinRoom;
     // getline(std::cin, joinRoom);
+    std::cout << "Please choose room: ";
     std::cin >> joinRoom;
-    size_t joinRoom_length = joinRoom.length();
-    send(clientSocket, &joinRoom_length, sizeof(joinRoom_length), 0);
-    send(clientSocket, joinRoom.c_str(), joinRoom_length, 0);
-
     send(clientSocket, joinRoom.c_str(), strlen(joinRoom.c_str()), 0);
+    std::string nameUser;
+    std::cout << "Please enter name participant: ";
+    std::cin >> nameUser;
+    send(clientSocket, nameUser.c_str(), strlen(nameUser.c_str()), 0);
     std::cout << "Join room Successfull" << std::endl;
     while (true)
     {
@@ -420,8 +419,9 @@ void Client::joinRoom()
         std::cin >> choice; 
         if (choice == 1)
         {
-
-           startExam();
+            int reqRoom = 1;
+            send(clientSocket, &reqRoom, sizeof(reqRoom), 0);
+            startExam();
         }
         else if (choice == 2)
         {
@@ -431,14 +431,18 @@ void Client::joinRoom()
         {
             std::cout << "Please 1 or 2 ";
         }     
-    }   
-    
-    
+    } 
 }
-
 void Client::startExam()
 {
-    
+    std::vector<Question> question(NUMBER_QUESTION_TRAINING_MODE);
+    recv(clientSocket, &question[0], question.size() * sizeof(question), 0);
+    int timeDuration;
+    recv(clientSocket, &timeDuration, sizeof(timeDuration), 0);
+    for (size_t i = 0; i < question.size(); i++)
+    {
+        showTest(question, timeDuration);
+    }
 }
 void Client::viewStatusRoom()
 {
@@ -460,21 +464,22 @@ void Client::viewStatusRoom()
 void Client::resultRoom()
 {
     std::cout << "Result of Room: ";
-    char buffer[1024];
-    memset(buffer, 0, sizeof(buffer));
-    // Receive username and password from the client
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    // Extract username and password from the received string
-    std::string credentials(buffer);
-    std::vector<std::string> tokens = splitString(credentials, ',');
-    for (const auto &t : tokens)
+    int vec_size;
+    recv(clientSocket, &vec_size, sizeof(vec_size), 0);
+    std::vector<Room> roomInfo;
+    recv(clientSocket, &roomInfo[0], vec_size * sizeof(roomInfo), 0 );
+    for (size_t i = 0; i < roomInfo.size(); i++)
     {
-        std::cout << t << std::endl;
-    }
+        if (roomInfo[i].status == 3)
+        {
+            std::cout << "Result Room: " << std::endl;
+            std::cout << roomInfo[i].name << ": " << roomInfo[i].user << ": " 
+            << roomInfo[i].score << std::endl;
+        }   
+    } 
 }
 void Client::trainingMode()
 {
-
     std::vector<Question> question(NUMBER_QUESTION_TRAINING_MODE);
     recv(clientSocket, &question[0], question.size() * sizeof(question), 0);
     for (size_t i = 0; i < question.size(); i++)
@@ -482,4 +487,15 @@ void Client::trainingMode()
         showTest(question, NUMBER_QUESTION_TRAINING_MODE * TIME_FOR_EACH_QUESTION);
     }
     showSubMenu();
+}
+void Client::updateEndTime()
+{
+    Room room;
+    std::cout << "Enter name room: ";
+    std::cin >> room.name;
+    std::cout << "Enter time duration: ";
+    std::cin >> room.timeDuration;
+    send(clientSocket, &room, sizeof(room), 0);
+
+
 }

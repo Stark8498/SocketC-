@@ -29,6 +29,7 @@ public:
     void viewStatusRoom();
     void resultRoom();
     void startExam();
+    int askQuestion(Question q);
     void trainingMode();
     std::vector<Question> getQuestion();
     void setNumberOfQuestions();

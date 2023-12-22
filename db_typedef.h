@@ -19,11 +19,11 @@
     "CREATE TABLE ROOMS (" \
     "id_room INTEGER PRIMARY KEY AUTOINCREMENT, " \
     "nameroom VARCHAR(255) NOT NULL, " \
-    "status INTEGER,"\
+    "status BOOL,"\
     "timeduration INTEGER),"\
-    "score INTEGER),"\
-    "user VARCHAR(255) NOT NULL),"\
-    "numberofquestion INTEGER  );" 
+    "numberofquestion INTEGER  ,"\
+    "user VARCHAR(255) NOT NULL, " \
+    "score INTEGER );" 
 
 
 #define INSERT_USER "INSERT INTO User \
@@ -33,11 +33,19 @@
         (question, points, answer_a, answer_b, answer_c, answer_d) \
         VALUES ('%s', '%s',%s', '%s',%s', '%s');"
 
+#define INSERT_ROOM "INSERT INTO ROOMS \
+        (nameroom, status, timeduration, numberofquestion, user, score) \
+        VALUES ('%s', '%d',%d', '%d',%s', '%s');"
+
+
 #define SQL_SELECT_ID_USER "SELECT id_user FROM USERS WHERE username = '%s' AND password = '%s';"
 #define SELECT_TABLE_QUESTION "SELECT * FROM QUESTIONS ;"
-#define SELECT_TABLE_QUESTION "SELECT * FROM ROOMS ;"
-#define SELECT_ROOM_ISABLE "SELECT nameroom FROM ROOM WHERE status  "
-
+#define SELECT_TABLE_ROOM "SELECT * FROM ROOMS ;"
+#define SELECT_ROOM_ISABLE "SELECT id_room FROM ROOM WHERE  "
+#define UPDATE_USER_JOIN_ROOM "UPDATE ROOMS SET user = '%s' WHERE NAMEROOM = '%s';"
+#define UPDATE_STATUS_ROOM "update ROOMS set status = '%d' where nameroom = '%s' ;"
+#define GET_TIME_DURATIION "SELECT timeduration FROM ROOMS WHERE NAMEROOM = '%s';"
+#define UPDATE_TIME_DURATION "UPDATE ROOMS SET TIMEDURATION = '%d' WHERE NAMEROOM ='%s' ;"
 
 
 

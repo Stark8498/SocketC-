@@ -14,14 +14,15 @@ class Server {
 public:
     Server();
     void start();
-     void handleCreateExamRoom(int clientSocket);
+    void handleCreateExamRoom(int clientSocket);
     void handleSetNumberOfQuestions(int clientSocket);
     void handleSetExamDuration(int clientSocket);
     void handleLogin(int clientSocket);
     void handleRegistration(int clientSocket);
     void handleViewRusultRoom(int clientSocket);
     void handleTrainningMode(int clientSocket);
-    void handleJoinRoom(int clienSocket);
+    void handleJoinRoom(int clientSocket);
+    void handleStartExam(int clientSocket, Room room);
     void closeConnected()
     {
         isConnected = false;

@@ -1,15 +1,9 @@
 #pragma one
+#ifndef COMMON_H
+#define COMMON_H
 
-#include <vector>
-#include <string>
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sqlite3.h>
-#include <vector>
+// Khối mã nguồn của header file
+
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -22,7 +16,11 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
-
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sqlite3.h>
 struct Question {
     int id;
     std::string content;
@@ -46,20 +44,19 @@ struct Room
     std::string name;
     int status ;
     int timeDuration;
+    int numberQuestion;
     std::string user;
     int score;
-    int numberQuestion;
 };
-
 
 #define DB_DIR "user.db"
 #define MAX_SIZE 1000
-#define DB_FILE_NAME "user.fb"
+#define DB_FILE_NAME "user.db"
+
 
 
 #define LOGIN "login"
 #define REGISTER "register"
-#define START_EXAM "start_exame"
 #define CREATE_ROOM "createroom"
 #define UPDATE_DURATION "update_duration"
 #define UPDATE_TIME_END_ROOM "update_time_end_room"
@@ -73,3 +70,4 @@ struct Room
 #define TIME_FOR_EACH_QUESTION  5 
 
 
+#endif // MY_HEADER_FILE_H
