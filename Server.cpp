@@ -174,18 +174,18 @@ void Server::handleRegistration(int clientSocket)
     std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
     // DbSqlite::getInstance()->insert_user_data(user);
     std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
-    // if (DbSqlite::getInstance()->insert_user_data(user))
-    // {
-    //     std::cout <<"Regis oke";
-    //     const char *successMessage = "Registration successful";
-    //     send(clientSocket, successMessage, strlen(successMessage), 0);
-    // }
-    // else
-    // {
-    //     std::cout <<"Regis not oke";
-    //     const char *errorMessage = "Registration failed";
-    //     send(clientSocket, errorMessage, strlen(errorMessage), 0);
-    // }
+    if (DbSqlite::getInstance()->insert_user_data(user))
+    {
+        std::cout <<"Regis oke";
+        const char *successMessage = "Registration successful";
+        send(clientSocket, successMessage, strlen(successMessage), 0);
+    }
+    else
+    {
+        std::cout <<"Regis not oke";
+        const char *errorMessage = "Registration failed";
+        send(clientSocket, errorMessage, strlen(errorMessage), 0);
+    }
     
 }
 

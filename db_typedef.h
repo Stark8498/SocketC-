@@ -24,7 +24,7 @@
                                     "score INTEGER );" 
 
 
-#define INSERT_USER "INSERT INTO User \
+#define INSERT_USER "INSERT INTO USERS \
         (username, password) VALUES ('%s', '%s');"
 
 #define INSERT_QUESTION "INSERT INTO QUESTIONS \

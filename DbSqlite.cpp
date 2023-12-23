@@ -195,6 +195,7 @@ bool DbSqlite::insert_user_data(User &userinfor)
             sqlite3_free(zErrMsg);
             return false;
         }
+        return true;
     }
     return false;
 }

@@ -416,10 +416,10 @@ void Client::registerUser()
     std::cout << strlen((newUsername + ":" + newPassword).c_str()) << std::endl;
     send(clientSocket, (newUsername + ":" + newPassword).c_str(), strlen((newUsername + ":" + newPassword).c_str()), 0);
     // Receive server response
-    // char buffer[1024];
-    // memset(buffer, 0, sizeof(buffer));
-    // recv(clientSocket, buffer, sizeof(buffer), 0);
-    // std::cout << "Server response: " << buffer << std::endl;
+    char buffer[1024];
+    memset(buffer, 0, sizeof(buffer));
+    recv(clientSocket, buffer, sizeof(buffer), 0);
+    std::cout << "Server response: " << buffer << std::endl;
 }
 
 void Client::joinRoom()
