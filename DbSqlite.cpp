@@ -181,7 +181,7 @@ bool DbSqlite::insert_user_data(User &userinfor)
                  userinfor.username,
                  userinfor.password);
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
-        std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
+        std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
 
         if (ret != SQLITE_OK)
         {
@@ -222,7 +222,7 @@ bool DbSqlite::insert_question_data(Question &question)
         {
             char temp[1000] = {0};
             memset(temp, 0, 1000);
-            // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__, 
+            // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__,
             // __PRETTY_FUNCTION__, ret, zErrMsg);
             // printf("Insert_To_Data_Base sql = %s\n", sql);
             fprintf(stderr, "SQL user insert error: %s\n", zErrMsg);
@@ -244,8 +244,8 @@ bool DbSqlite::insert_room_data(Room &room)
 
         // const int ID_USER = 1;
         std::cout << __LINE__ << std::endl;
-        std::cout << room.name << " " << room.timeDuration << " " <<  room.numberQuestion << "" 
-        << room.status << " " << room.score << " " << room.user; 
+        std::cout << room.name << " " << room.timeDuration << " " << room.numberQuestion << ""
+                  << room.status << " " << room.score << " " << room.user;
         snprintf(sql, MAX_SIZE, INSERT_ROOM,
                  room.name,
                  room.status,
@@ -253,11 +253,10 @@ bool DbSqlite::insert_room_data(Room &room)
                  room.numberQuestion,
                  room.user,
                  room.score);
-    std::cout << __LINE__ << std::endl;
+        std::cout << __LINE__ << std::endl;
 
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
-    std::cout << __LINE__ << std::endl;
-
+        std::cout << __LINE__ << std::endl;
 
         if (ret != SQLITE_OK)
         {
@@ -328,25 +327,25 @@ bool DbSqlite::get_question_info(std::vector<Question> &question)
             Question questionInfo;
 
             questionInfo.id = sqlite3_column_int(stmt, 0);
-            char *tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 1)));
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
             strncpy(questionInfo.content, tmp, 99);
             questionInfo.content[99] = '\0';
-            tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 2)));
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
             strncpy(questionInfo.choices1, tmp, 99);
             questionInfo.choices1[99] = '\0';
 
-            tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 2)));
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
             strncpy(questionInfo.choices2, tmp, 99);
             questionInfo.choices2[99] = '\0';
-            
-            tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 2)));
+
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
             strncpy(questionInfo.choices3, tmp, 99);
             questionInfo.choices3[99] = '\0';
 
-            tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 2)));
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
             strncpy(questionInfo.choices4, tmp, 99);
             questionInfo.choices4[99] = '\0';
-            
+
             questionInfo.correctAnswer = sqlite3_column_int(stmt, 6);
         }
         sqlite3_free(stmt);
@@ -359,10 +358,13 @@ bool DbSqlite::get_question_info(std::vector<Question> &question)
 
 bool DbSqlite::get_room_info(std::vector<Room> &room)
 {
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
     if (db_ready)
     {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
         sqlite3_stmt *stmt;
-        int ret = sqlite3_prepare_v2(db, SELECT_TABLE_QUESTION, -1, &stmt, NULL);
+        int ret = sqlite3_prepare_v2(db, SELECT_TABLE_ROOM, -1, &stmt, NULL);
         if (ret != SQLITE_OK)
         {
             fprintf(stderr, "Get data from QUESTIONS error: %s\n");
@@ -373,21 +375,24 @@ bool DbSqlite::get_room_info(std::vector<Room> &room)
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             Room roominfo;
-
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
             roominfo.id = sqlite3_column_int(stmt, 0);
-            char *tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 1)));
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
             strncpy(roominfo.name, tmp, 99);
             roominfo.name[99] = '\0';
 
             roominfo.status = sqlite3_column_int(stmt, 2);
             roominfo.timeDuration = sqlite3_column_int(stmt, 3);
             roominfo.numberQuestion = sqlite3_column_int(stmt, 4);
-            
-            tmp = reinterpret_cast<char*>(const_cast<unsigned char*>(sqlite3_column_text(stmt, 5)));
+
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 5)));
             strncpy(roominfo.user, tmp, 99);
             roominfo.user[99] = '\0';
+            // std::cout << "|roominfo. name: " << roominfo.name 
+            // << "; " << "|roominfo.status: " << roominfo.status << std::endl;
 
             roominfo.score = sqlite3_column_int(stmt, 6);
+            room.push_back(roominfo);
         }
         sqlite3_free(stmt);
 

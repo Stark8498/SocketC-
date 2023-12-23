@@ -17,7 +17,7 @@
 #define CREATE_ROOM_TABLE_SQL    "CREATE TABLE ROOMS (" \
                                     "id_room INTEGER PRIMARY KEY AUTOINCREMENT, " \
                                     "nameroom TEXT, " \
-                                    "status BOOL,"\
+                                    "status INT,"\
                                     "timeduration INTEGER,"\
                                     "numberofquestion INTEGER  ,"\
                                     "user TEXT, " \
