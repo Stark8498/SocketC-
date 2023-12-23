@@ -20,6 +20,8 @@ bool DbSqlite::close_db()
     return true;
 }
 
+
+
 /**
  *@ ********************************************************************
  *@ Name           : exists_open                                       *
@@ -61,17 +63,27 @@ DbSqlite::DbSqlite()
     tableCreateQuery.push_back(CREATE_ROOM_TABLE_SQL);
 
     db_ready = create_db();
+    Question questions;
+    for (int i = 1; i <= 30; ++i) 
+    {
+        std::string question = "Question " + std::to_string(i);
+        strncpy(questions.content, question.c_str(), sizeof(questions.content));
+        std::string answerA = "Option A for Question " + std::to_string(i);
+        strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-    // MyController::getInstance()->set_event_status_authen(check_camera_authen_status());
-    // MyController::getInstance()->set_mcc_service_enable(check_mcc_enable_status());
-    // MyController::getInstance()->set_secondary_url_enable(check_secondary_url_enable_status());
-    // MyController::getInstance()->set_device_registation_status(check_device_registation_status());
+        std::string answerB = "Option B for Question " + std::to_string(i);
+        strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-    // printf("%d [F LOG] %s admccEna: %d | secondURLEna: %d | deviceRegStatus: %d\n",
-    //        __LINE__, __PRETTY_FUNCTION__,
-    //        MyController::getInstance()->get_mcc_service_enable(),
-    //        MyController::getInstance()->get_secondary_url_enable(),
-    //        MyController::getInstance()->get_device_registation_status());
+        std::string answerC = "Option C for Question " + std::to_string(i);
+        strncpy(questions.choices3, answerC.c_str(), sizeof(questions.content));
+
+        std::string answerD = "Option D for Question " + std::to_string(i);
+        strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+
+        std::string correctAnswer = "A";
+
+        insert_question_data(questions);
+    }
 }
 
 /**

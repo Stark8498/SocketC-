@@ -447,8 +447,21 @@ void Client::joinRoom()
 
     std::string joinRoom;
     // getline(std::cin, joinRoom);
-    std::cout << "Please choose room: ";
-    std::cin >> joinRoom;
+    bool isRoomname = false;
+    do
+    {
+        std::cin >> joinRoom;
+        std::cout << "Please choose room: ";
+    } while ([&alreadyRoom, &joinRoom]() {
+        for (const auto& element : alreadyRoom) {
+            if (strcmp(element.name, joinRoom.c_str()) != 0) {
+                return false;
+            }
+        }
+        std::cout << "Room name is not available\n";
+        return true; 
+    }());
+    
     send(clientSocket, joinRoom.c_str(), strlen(joinRoom.c_str()), 0);
     std::string nameUser;
     std::cout << "Please enter name participant: ";
@@ -499,17 +512,30 @@ void Client::viewStatusRoom()
 {
     // view status -> response server is "name server: isable" in
     std::cout << "Status of Room: ";
-    char buffer[1024];
-    memset(buffer, 0, sizeof(buffer));
-    // Receive username and password from the client
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    // Extract username and password from the received string
-    std::string credentials(buffer);
-    std::vector<std::string> tokens = splitString(credentials, ',');
-    for (const auto &t : tokens)
+    int _size; 
+    recv(clientSocket, &_size, sizeof(_size), 0);
+
+    std::vector<Room> roomInfo(_size);
+
+    recv(clientSocket, &roomInfo[0], _size * sizeof(roomInfo), 0);
+    for (size_t i = 0; i < roomInfo.size(); i++)
     {
-        std::cout << t << std::endl;
+        std::cout << "|Name room: " << roomInfo[i].name << " " ;
+        if (roomInfo[i].status == 0)
+        {
+            std::cout << "|Status room :" << "Already for test\n";
+        }
+        else if (roomInfo[i].status == 1)
+        {
+            std::cout << "|Status room :" << "Testing\n";
+        }
+        else if (roomInfo[i].status == 2)
+        {
+            std::cout << "|Status room :" << "Ending\n";
+        }        
+
     }
+
 }
 
 void Client::resultRoom()

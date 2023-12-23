@@ -77,9 +77,9 @@ void Server::start()
             {
                 handleSetExamDuration(clientSocket);
             }
-            else if (str_req == UPDATE_TIME_END_ROOM)
+            else if (str_req == VIEW_STATUS_ROOM)
             {
-                // handle(clientSocket);
+                handleViewStatusRoom(clientSocket);
             }
             else if (str_req == JOIN_ROOM)
             {
@@ -315,4 +315,14 @@ void Server::handleViewRusultRoom(int clientSocket)
     int size_vec = roominfo.size();
     send(clientSocket, &size_vec, sizeof(size_vec), 0);
     send(clientSocket, &roominfo[0], roominfo.size() * sizeof(roominfo), 0);
+}
+
+void Server::handleViewStatusRoom(int clientSocket)
+{
+    std::vector<Room> roomInfo;
+    DbSqlite::getInstance()->get_room_info(roomInfo);
+    int _size = roomInfo.size();
+    send(clientSocket, &_size, sizeof(_size), 0);
+    send(clientSocket, &roomInfo[0], roomInfo.size() * sizeof(roomInfo), 0);  
+    
 }

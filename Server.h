@@ -23,6 +23,7 @@ public:
     void handleTrainningMode(int clientSocket);
     void handleJoinRoom(int clientSocket);
     void handleStartExam(int clientSocket, Room room);
+    void handleViewStatusRoom(int clientSocket);
     void closeConnected()
     {
         isConnected = false;
