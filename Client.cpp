@@ -308,7 +308,7 @@ void Client::showMenu()
         }
         else if (choice == 2)
         {
-            str_choice == REGISTER;
+            str_choice = REGISTER;
         }
 
         send(clientSocket, str_choice.c_str(), strlen(str_choice.c_str()), 0);
@@ -320,9 +320,6 @@ void Client::showMenu()
             break;
         case 2:
             registerUser();
-            break;
-        case 3:
-            disconnect();
             break;
             // exit(EXIT_SUCCESS);
         default:
@@ -409,7 +406,7 @@ void Client::login()
 
 void Client::registerUser()
 {
-    std::cout << "Enter new username: ";
+    std::cout << "Enter new 1username: ";
     std::string newUsername;
     std::cin >> newUsername;
     std::cout << "Enter new password: ";
@@ -419,10 +416,10 @@ void Client::registerUser()
     std::cout << strlen((newUsername + ":" + newPassword).c_str()) << std::endl;
     send(clientSocket, (newUsername + ":" + newPassword).c_str(), strlen((newUsername + ":" + newPassword).c_str()), 0);
     // Receive server response
-    char buffer[1024];
-    memset(buffer, 0, sizeof(buffer));
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::cout << "Server response: " << buffer << std::endl;
+    // char buffer[1024];
+    // memset(buffer, 0, sizeof(buffer));
+    // recv(clientSocket, buffer, sizeof(buffer), 0);
+    // std::cout << "Server response: " << buffer << std::endl;
 }
 
 void Client::joinRoom()

@@ -116,6 +116,8 @@ void Server::start()
 
 void Server::handleLogin(int clientSocket)
 {
+    std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
+    
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
     // Receive username and password from the client
@@ -129,11 +131,6 @@ void Server::handleLogin(int clientSocket)
     password = credentials.substr(pos + 1);
     strncpy(user.username, username.c_str(), sizeof(user.username) );
     std::cout << "| user.username: "  << user.username << "\n";
-    if (user.username == "admin")
-    {
-        std::cout << "Oke check name\n";
-    }
-    
     strncpy(user.password, password.c_str(), sizeof(user.password) );
     std::cout << "| user.password: "  << user.password << "\n";
     if (!(strcmp(user.username, "admin")  && strcmp(user.password, "admin")))
@@ -156,6 +153,8 @@ void Server::handleLogin(int clientSocket)
 
 void Server::handleRegistration(int clientSocket)
 {
+    std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
+
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
 
@@ -172,16 +171,22 @@ void Server::handleRegistration(int clientSocket)
     password = credentials.substr(pos + 1);
     strncpy(user.username, username.c_str(), sizeof(user.username) );
     strncpy(user.password, password.c_str(), sizeof(user.password) );
-    if (DbSqlite::getInstance()->insert_user_data(user))
-    {
-        const char *successMessage = "Registration successful";
-        send(clientSocket, successMessage, strlen(successMessage), 0);
-    }
-    else
-    {
-        const char *errorMessage = "Registration failed";
-        send(clientSocket, errorMessage, strlen(errorMessage), 0);
-    }
+    std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
+    // DbSqlite::getInstance()->insert_user_data(user);
+    std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
+    // if (DbSqlite::getInstance()->insert_user_data(user))
+    // {
+    //     std::cout <<"Regis oke";
+    //     const char *successMessage = "Registration successful";
+    //     send(clientSocket, successMessage, strlen(successMessage), 0);
+    // }
+    // else
+    // {
+    //     std::cout <<"Regis not oke";
+    //     const char *errorMessage = "Registration failed";
+    //     send(clientSocket, errorMessage, strlen(errorMessage), 0);
+    // }
+    
 }
 
 void Server::handleCreateExamRoom(int clientSocket)

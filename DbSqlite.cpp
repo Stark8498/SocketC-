@@ -168,8 +168,10 @@ bool DbSqlite::create_db()
 bool DbSqlite::insert_user_data(User &userinfor)
 {
     int ret;
+    std::cout << __LINE__ << "\n";
     if (db_ready)
     {
+        std::cout << __LINE__ << "\n";
         char sql[MAX_SIZE];
         memset(sql, 0, MAX_SIZE);
         char *zErrMsg = 0;
@@ -179,6 +181,7 @@ bool DbSqlite::insert_user_data(User &userinfor)
                  userinfor.username,
                  userinfor.password);
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+        std::cout << __LINE__  << ": " << __FUNCTION__ << "\n";
 
         if (ret != SQLITE_OK)
         {
@@ -193,7 +196,7 @@ bool DbSqlite::insert_user_data(User &userinfor)
             return false;
         }
     }
-    return true;
+    return false;
 }
 bool DbSqlite::insert_question_data(Question &question)
 {
