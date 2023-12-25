@@ -88,9 +88,9 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
             std::cout << "Are you change your answer exam ? " << std::endl;
             std::cout << "choice 1 for Yes\n";
             std::cout << "choice 2 for No, Summit exam\n";
-            int choice;
-            std::cin >> choice;
-            if (choice == 1)
+            int choice_change;
+            std::cin >> choice_change;
+            if (choice_change == 1)
             {
                 int number;
                 std::cout << "Number question change: ";
@@ -102,8 +102,9 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
                 {
                     correctAnswers++;
                 }
+                break;
             }
-            else if (choice == 2)
+            else if (choice_change == 2)
             {
                 break;
             }
@@ -112,9 +113,11 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
                 std::cout << "Please 1 or 2 ";
             }
         }
+        break;
     }
     std::cout << "Number of correct answers: " << correctAnswers << "/" << numberQuestion << std::endl;
     outfile << "Number of correct answers: " << correctAnswers << "/" << numberQuestion << std::endl;
+    return;
 }
 
 std::string Client::askQuestion(Question q)
@@ -668,7 +671,7 @@ void Client::startExam(int numberQuestion, int timeDuration)
                 }
             }
             showTest(levelquestion, timeDuration, numberQuestion);
-            break;
+            return;
         }
         else if (choice == 2)
         {
@@ -776,11 +779,7 @@ void Client::trainingMode()
         question.push_back(ques);
     }
 
-    for (size_t i = 0; i < question.size(); i++)
-    {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-        showTest(question, NUMBER_QUESTION_TRAINING_MODE * TIME_FOR_EACH_QUESTION, NUMBER_QUESTION_TRAINING_MODE);
-    }
+    showTest(question, NUMBER_QUESTION_TRAINING_MODE * TIME_FOR_EACH_QUESTION, NUMBER_QUESTION_TRAINING_MODE);
     showSubMenu();
 }
 void Client::updateEndTime()

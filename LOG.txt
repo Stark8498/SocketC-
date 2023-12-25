@@ -1,2 +1,5 @@
 ---Hello, init Client, start log----
 Server response: Connection established. Welcome to the server!
+|str_choice: join_rom
+Join room Successfull
+Number of correct answers: 0/4

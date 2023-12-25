@@ -58,7 +58,7 @@ struct Room
 #define DB_FILE_NAME "user.db"
 
 
-#define PORT      8003
+#define PORT      8001
 
 #define LOGIN "login"
 #define REGISTER "register"
