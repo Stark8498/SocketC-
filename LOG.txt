@@ -1,0 +1,2 @@
+---Hello, init Client, start log----
+Server response: Connection established. Welcome to the server!

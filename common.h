@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sqlite3.h>
+#include <fstream>
+/*0 -- easy, 1-- normal, 2-- difficult, 3-- veryhard*/
 struct Question {
     int id;
     char content[100];
@@ -28,7 +30,9 @@ struct Question {
     char choices2[100];
     char choices3[100];
     char choices4[100];
-    int correctAnswer;
+    char correctAnswer[100];
+    char topic[100];
+    int level;
 };
 
 struct User {
@@ -54,7 +58,7 @@ struct Room
 #define DB_FILE_NAME "user.db"
 
 
-#define PORT      8000
+#define PORT      8003
 
 #define LOGIN "login"
 #define REGISTER "register"
@@ -67,6 +71,7 @@ struct Room
 #define START_EXAM "start_exam"
 #define SUBMIT_EXAM "submit_exam"
 #define TRAINING_MODE "training_mode"
+#define RETURN_MAIN_MENU "return_main" 
 #define NUMBER_QUESTION_TRAINING_MODE 20
 #define TIME_FOR_EACH_QUESTION  5 
 

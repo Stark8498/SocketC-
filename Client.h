@@ -14,9 +14,8 @@
 #include <thread>
 #include <atomic>
 
-
-
-class Client {
+class Client
+{
 public:
     Client();
     void connectToServer();
@@ -28,17 +27,19 @@ public:
     void joinRoom();
     void viewStatusRoom();
     void resultRoom();
-    void startExam();
-    int askQuestion(Question q);
+    void startExam(int numberQuestion, int timeDuration);
+    std::string askQuestion(Question q);
     void trainingMode();
     std::vector<Question> getQuestion();
     void setNumberOfQuestions();
     void setExamDuration();
-    void showTest(std::vector<Question> question, int timeDuration);
+    void viewLogTrace();
+    void showTest(std::vector<Question> question, int timeDuration, int numberQuestion);
     void handleMenuChoice(int choice);
     ~Client();
 
 private:
+    std::ofstream outfile;
     int clientSocket;
     sockaddr_in serverAddress;
     bool isConnected;

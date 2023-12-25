@@ -87,7 +87,7 @@ void Server::start()
             }
             else if (str_req == VIEW_STATUS_ROOM)
             {
-                // hand(clientSocket);
+                handleViewStatusRoom(clientSocket);
             }
             else if (str_req == VIEW_RUSULT_ROOM)
             {
@@ -97,9 +97,9 @@ void Server::start()
             {
                 // handleStartExam(clientSocket);
             }
-            else if (str_req == SUBMIT_EXAM)
+            else if (str_req == UPDATE_TIME_END_ROOM)
             {
-                // handleRegistration(clientSocket);
+                // handleUpdateEndTime(clientSocket);
             }
             else if (str_req == TRAINING_MODE)
             {
@@ -196,7 +196,7 @@ void Server::handleCreateExamRoom(int clientSocket)
     // int timeDuration;
     if (recv(clientSocket, &roominfo, sizeof(roominfo), 0) == -1)
     {
-        std::cerr << "Lỗi khi nhận dữ liệu từ client.\n";
+        std::cerr << "Error recieving data to the server\n";
         close(clientSocket);
         close(serverSocket);
     }
@@ -239,9 +239,20 @@ void Server::handleSetExamDuration(int clientSocket)
 }
 void Server::handleTrainningMode(int clientSocket)
 {
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
     std::vector<Question> question;
+    DbSqlite::getInstance()->get_question_info(question);
+    int size_vec = question.size();
+    send(clientSocket, &size_vec, sizeof(size_vec), 0);
+    for (size_t i = 0; i < question.size(); i++)
+    {
+        Question ques = question[i];
+        send(clientSocket, &ques, sizeof(ques), 0);
+    }
+    std::cout << "Send done quesiton for training mode\n";
+
     // DbSqlite::getInstance()->get();
-    send(clientSocket, &question[0], question.size() * sizeof(question), 0);
 }
 void Server::handleJoinRoom(int clientSocket)
 {
@@ -250,7 +261,7 @@ void Server::handleJoinRoom(int clientSocket)
     std::vector<Room> alreadyRoomInfo;
 
     DbSqlite::getInstance()->get_room_info(roomInfo);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+    std::cout << __LINE__ << " : " << __FUNCTION__ << "roomInfo: " << roomInfo.size() << std::endl;
 
     for (size_t i = 0; i < roomInfo.size(); i++)
     {
@@ -261,17 +272,30 @@ void Server::handleJoinRoom(int clientSocket)
         if (roomInfo[i].status == 0)
         {
             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-
+            std::cout << "|room available: " << roomInfo[i].name << " " << std::endl;
+            std::cout << "|timeduration: " << roomInfo[i].timeDuration << " " << std::endl;
+            std::cout << "|numberofquestion: " << roomInfo[i].numberQuestion << " " << std::endl;
             alreadyRoomInfo.push_back(roomInfo[i]);
         }
     }
     int _size = alreadyRoomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
-    send(clientSocket, &alreadyRoomInfo[0], alreadyRoomInfo.size() * sizeof(alreadyRoomInfo), 0);
+
+    for (const Room &room : alreadyRoomInfo)
+    {
+        send(clientSocket, &room, sizeof(Room), 0);
+    }
+    // send(clientSocket, &alreadyRoomInfo[0], alreadyRoomInfo.size() * sizeof(alreadyRoomInfo), 0);
+
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
     recv(clientSocket, buffer, sizeof(buffer), 0);
     std::string strNameRoom(buffer);
+    std::cout << "|strNameRoom: " << strNameRoom << std::endl;
+    if (strNameRoom == RETURN_MAIN_MENU)
+    {
+        return;
+    }
 
     memset(buffer, 0, sizeof(buffer));
     recv(clientSocket, buffer, sizeof(buffer), 0);
@@ -292,7 +316,7 @@ void Server::handleJoinRoom(int clientSocket)
     }
     else
     {
-        start();
+        return;
     }
 }
 void Server::handleStartExam(int clientSocket, Room room)
@@ -302,19 +326,44 @@ void Server::handleStartExam(int clientSocket, Room room)
     std::vector<Question> question;
     DbSqlite::getInstance()->get_question_info(question);
     int _size = question.size();
+    std::cout << __LINE__ << " : " << __FUNCTION__ << "|question.size(): "
+              << question.size() << std::endl;
+
     send(clientSocket, &_size, sizeof(_size), 0);
-    send(clientSocket, &question[0], question.size() * sizeof(question), 0);
-    int timeDuration;
-    DbSqlite::getInstance()->get_timeDuration(room.name, timeDuration);
-    send(clientSocket, &timeDuration, sizeof(timeDuration), 0);
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+    for (size_t i = 0; i < question.size(); i++)
+    {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+        Question ques = question[i];
+        send(clientSocket, &ques, sizeof(ques), 0);
+    }
+
+    // for (const Question& ques : question) {
+    //     send(clientSocket, &ques, sizeof(question), 0);
+    // }
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+    // send(clientSocket, &question[0], question.size() * sizeof(question), 0);
+    // int timeDuration;
+    // DbSqlite::getInstance()->get_timeDuration(room.name, timeDuration);
+    // std::cout << "|timeDuration: " << timeDuration << std::endl;
+    // send(clientSocket, &timeDuration, sizeof(timeDuration), 0);
 }
 void Server::handleViewRusultRoom(int clientSocket)
 {
-    std::vector<Room> roominfo;
-    DbSqlite::getInstance()->get_room_info(roominfo);
-    int size_vec = roominfo.size();
-    send(clientSocket, &size_vec, sizeof(size_vec), 0);
-    send(clientSocket, &roominfo[0], roominfo.size() * sizeof(roominfo), 0);
+      std::vector<Room> roomInfo;
+    DbSqlite::getInstance()->get_room_info(roomInfo);
+    int _size = roomInfo.size();
+    send(clientSocket, &_size, sizeof(_size), 0);
+
+    for (size_t i = 0; i < roomInfo.size(); i++)
+    {
+        Room room = roomInfo[i];
+        send(clientSocket, &room, sizeof(room), 0);
+    }
+    
 }
 
 void Server::handleViewStatusRoom(int clientSocket)
@@ -323,6 +372,11 @@ void Server::handleViewStatusRoom(int clientSocket)
     DbSqlite::getInstance()->get_room_info(roomInfo);
     int _size = roomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
-    send(clientSocket, &roomInfo[0], roomInfo.size() * sizeof(roomInfo), 0);  
+
+    for (size_t i = 0; i < roomInfo.size(); i++)
+    {
+        Room room = roomInfo[i];
+        send(clientSocket, &room, sizeof(room), 0);
+    }
     
 }

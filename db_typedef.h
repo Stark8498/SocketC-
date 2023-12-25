@@ -13,7 +13,9 @@
                                     "answer_b TEXT, " \
                                     "answer_c TEXT, " \
                                     "answer_d TEXT, " \
-                                    "correct_answer TEXT );"
+                                    "correct_answer TEXT,"\
+                                    "topic TEXT,"\
+                                    "level_question INT);"
 #define CREATE_ROOM_TABLE_SQL    "CREATE TABLE ROOMS (" \
                                     "id_room INTEGER PRIMARY KEY AUTOINCREMENT, " \
                                     "nameroom TEXT, " \
@@ -28,8 +30,8 @@
         (username, password) VALUES ('%s', '%s');"
 
 #define INSERT_QUESTION "INSERT INTO QUESTIONS \
-                         (question, points, answer_a, answer_b, answer_c, answer_d) \
-                         VALUES ('%s', '%s', '%s', '%s', '%s', '%s');"
+                         (question, answer_a, answer_b, answer_c, answer_d, correct_answer, topic, level_question ) \
+                         VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d');"
 
 
 #define INSERT_ROOM "INSERT INTO ROOMS \
