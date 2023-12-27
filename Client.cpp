@@ -41,8 +41,8 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     srand(time(0));
 
     // Question questions[5];
-    std::cout << "Start Question Test"
-              << "|numberQuestion: " << numberQuestion << "|timeDuration: " << timeDuration << std::endl;
+    // std::cout << "Start Question Test"
+    //           << "|numberQuestion: " << numberQuestion << "|timeDuration: " << timeDuration << std::endl;
 
     time_t startTime = time(0);
     time_t elapsedTime;
@@ -50,7 +50,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     int correctAnswers = 0;
     while (true)
     {
-        std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+        // // std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
 
         elapsedTime = time(0) - startTime;
         if (elapsedTime >= timeDuration)
@@ -76,7 +76,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
 
             if (strcmp(question[i].correctAnswer, userAnswer.c_str()) == 0)
             {
-                std::cout << "Right!" << std::endl;
+                // std::cout << "Right!" << std::endl;
                 correctAnswers++;
             }
 
@@ -102,7 +102,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
                 {
                     correctAnswers++;
                 }
-                break;
+                // break;
             }
             else if (choice_change == 2)
             {
@@ -134,7 +134,7 @@ std::string Client::askQuestion(Question q)
     return userAnswer;
 }
 
-Client::Client() : isConnected(false), outfile("LOG.txt", std::ios::trunc)
+Client::Client() : isConnected(false), outfile("LOG.txt", std::ios::trunc), isLogin(false), isAdmin(false)
 {
     // std::ofstream outfile("LOG.txt");
     outfile << "---Hello, init Client, start log----\n";
@@ -164,90 +164,152 @@ Client::~Client()
 void Client::showSubMenu()
 {
     int choice;
-
-    while (true)
+    switch (isAdmin)
     {
-        std::cout << "\n===== Menu =====\n";
-        std::cout << "1. Create new exam room\n";
-        std::cout << "2. Update_durationn\n";
-        std::cout << "3. View Trace Log System\n";
-        std::cout << "4. Join_rom\n";
-        std::cout << "5. View_status_room\n";
-        std::cout << "6. View_result_room\n";
-        std::cout << "7. Training_mode\n";
-        std::cout << "Enter your choice: ";
-        std::cin >> choice;
-        std::string str_choice;
-        if (choice == 1)
+    case true:
+    {
+        while (true)
         {
-            str_choice = CREATE_ROOM;
-        }
-        else if (choice == 2)
-        {
-            str_choice = UPDATE_DURATION;
-        }
-        else if (choice == 3)
-        {
-            // str_choice = UPDATE_TIME_END_ROOM;
-        }
-        else if (choice == 4)
-        {
-            str_choice = JOIN_ROOM;
-        }
-        else if (choice == 5)
-        {
-            str_choice = VIEW_STATUS_ROOM;
-        }
-        else if (choice == 6)
-        {
-            str_choice = VIEW_RUSULT_ROOM;
-        }
-        else if (choice == 7)
-        {
-            str_choice = TRAINING_MODE;
-        }
-        std::cout << "|str_choice: " << str_choice << "\n";
-        outfile << "|str_choice: " << str_choice << "\n";
+            std::cout << "\n===== Menu =====\n";
+            std::cout << "1. Create new exam room\n";
+            std::cout << "2. Update_durationn\n";
+            std::cout << "3. View Trace Log System\n";
+            std::cout << "4. Join_rom\n";
+            std::cout << "5. View_status_room\n";
+            std::cout << "6. View_result_room\n";
+            std::cout << "7. Training_mode\n";
+            std::cout << "8. Logout\n";
 
-        if (str_choice.length() != 0)
-        {
-            send(clientSocket, str_choice.c_str(), strlen(str_choice.c_str()), 0);
-        }
-        switch (choice)
-        {
 
-        case 1:
-            createExamRoom();
-            break;
-        case 2:
+            std::cout << "Enter your choice: ";
+            std::cin >> choice;
+            std::string str_choice;
+            if (choice == 1)
+            {
+                str_choice = CREATE_ROOM;
+            }
+            else if (choice == 2)
+            {
+                str_choice = UPDATE_DURATION;
+            }
+            else if (choice == 3)
+            {
+                // str_choice = UPDATE_TIME_END_ROOM;
+            }
+            else if (choice == 4)
+            {
+                str_choice = JOIN_ROOM;
+            }
+            else if (choice == 5)
+            {
+                str_choice = VIEW_STATUS_ROOM;
+            }
+            else if (choice == 6)
+            {
+                str_choice = VIEW_RUSULT_ROOM;
+            }
+            else if (choice == 7)
+            {
+                str_choice = TRAINING_MODE;
+            }
+            else if (choice == 8)
+            {
+                str_choice = LOGOUT;
+            }
+            // std::cout << "|str_choice: " << str_choice << "\n";
+            // outfile << "|str_choice: " << str_choice << "\n";
+
+            if (str_choice.length() != 0)
+            {
+                send(clientSocket, str_choice.c_str(), strlen(str_choice.c_str()), 0);
+            }
+            switch (choice)
+            {
+
+            case 1:
+                createExamRoom();
+                break;
+            case 2:
+            {
+                setExamDuration();
+                break;
+            }
+            case 3:
+                viewLogTrace();
+                break;
+            case 4:
+                joinRoom();
+                break;
+            case 5:
+                viewStatusRoom();
+                break;
+            case 6:
+                resultRoom();
+                break;
+            case 7:
+                trainingMode();
+                break;
+            case 8:
+                Logout();
+                break;
+            default:
+                std::cerr << "Invalid choice. Please try again.\n";
+                break;
+            }
+        }
+
+        break;
+    }
+    case false:
+    {
+        while (true)
         {
-            setExamDuration();
-            break;
+            std::cout << "\n===== Menu =====\n";
+            std::cout << "1. Join_rom\n";
+            std::cout << "2. Training_mode\n";
+            std::cout << "Enter your choice: ";
+            std::cin >> choice;
+            std::string str_choice;
+            if (choice == 1)
+            {
+                str_choice = JOIN_ROOM;
+            }
+            else if (choice == 2)
+            {
+                str_choice = TRAINING_MODE;
+            }
+            // std::cout << "|str_choice: " << str_choice << "\n";
+            // outfile << "|str_choice: " << str_choice << "\n";
+
+            if (str_choice.length() != 0)
+            {
+                send(clientSocket, str_choice.c_str(), strlen(str_choice.c_str()), 0);
+            }
+            switch (choice)
+            {
+
+            case 1:
+                joinRoom();
+                break;
+            case 2:
+            {
+                trainingMode();
+                break;
+            }
+            default:
+                std::cerr << "Invalid choice. Please try again.\n";
+                break;
+            }
         }
-        case 3:
-            viewLogTrace();
-            break;
-        case 4:
-            joinRoom();
-            break;
-        case 5:
-            viewStatusRoom();
-            break;
-        case 6:
-            resultRoom();
-            break;
-        case 7:
-            trainingMode();
-            break;
-        default:
-            std::cerr << "Invalid choice. Please try again.\n";
-            break;
-        }
+
+        break;
+        break;
+    }
     }
 }
 void Client::createExamRoom()
 {
-    std::cout << "|Insight create Room";
+    // std::cout << "|Insight create Room";
     Room roominfo;
 
     std::cout << "Enter new room name: ";
@@ -261,8 +323,30 @@ void Client::createExamRoom()
 
     std::cout << "Enter new number of question : ";
     std::cin >> roominfo.numberQuestion;
+
+    std::cout << "Enter Topic: ";
+
+    std::cin >> roominfo.topic;
+    int levelcin;
+    std::cin >> levelcin;
+    do
+    {
+        if (levelcin != 0 && levelcin != 1 &&
+            levelcin != 2 && levelcin != 3)
+        {
+            std::cout << "Please choice 0-3" << std::endl;
+        }
+
+        std::cout << "Choose level " << std::endl;
+        std::cout << "0. easy\n";
+        std::cout << "1. normal\n";
+        std::cout << "2. difficult\n";
+        std::cout << "3. veryhard\n";
+        std::cout << "Enter level: ";
+    } while (levelcin != 0 && levelcin != 1 &&
+             levelcin != 2 && levelcin != 3);
+
     roominfo.score = 0;
-    // roominfo.numberQuestion = 0;
     roominfo.status = 0;
     if (send(clientSocket, &roominfo, sizeof(roominfo), 0) == -1)
     {
@@ -391,7 +475,7 @@ void Client::showMenu()
 
 void Client::login()
 {
-    std::cout << __LINE__ << std::endl;
+    // // std::cout << __LINE__ << std::endl;
 
     if (!isConnected)
     {
@@ -430,28 +514,34 @@ void Client::login()
     std::cout << "Enter password: ";
     std::string password;
     std::cin >> password;
+    // std::cout << __LINE__ << std::endl;
 
-    // Send request type
-    // int requestType = 1;
-    std::cout << __LINE__ << std::endl;
-
-    // send(clientSocket, &requestType, sizeof(requestType), 0);
-    std::cout << __LINE__ << std::endl;
+    // // std::cout << __LINE__ << std::endl;
     // Send username and password to the server
     send(clientSocket, (username + ":" + password).c_str(), strlen((username + ":" + password).c_str()), 0);
-    std::cout << __LINE__ << std::endl;
+    // std::cout << __LINE__ << std::endl;
 
-    // Receive server response
     char buffer[1024];
-    std::cout << __LINE__ << std::endl;
+    // std::cout << __LINE__ << std::endl;
     memset(buffer, 0, sizeof(buffer));
-    std::cout << __LINE__ << std::endl;
+    // std::cout << __LINE__ << std::endl;
 
     recv(clientSocket, buffer, sizeof(buffer), 0);
     std::cout << buffer << "\n";
     std::string checkStr(buffer);
     if (checkStr == "Ok")
     {
+        isLogin = true;
+        if (username == "admin" && password == "admin")
+        {
+            isAdmin = true;
+            std::cout << "Welcome exam system with run Admintrator \n";
+        }
+        else
+        {
+            std::cout << "Welcome exam system with Candidates \n";
+        }
+
         std::cout << "Server response: " << buffer << std::endl;
         showSubMenu();
     }
@@ -489,13 +579,7 @@ void Client::registerUser()
 void Client::joinRoom()
 {
     int _size;
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-
     recv(clientSocket, &_size, sizeof(_size), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << "|_size:" << _size << std::endl;
-    // std::vector<Room> alreadyRoom(_size);
-
-    // recv(clientSocket, &alreadyRoom[0], _size * sizeof(alreadyRoom), 0);
     std::vector<Room> alreadyRoom;
     for (size_t i = 0; i < _size; ++i)
     {
@@ -503,17 +587,19 @@ void Client::joinRoom()
         recv(clientSocket, &room, sizeof(Room), 0);
         alreadyRoom.push_back(room);
     }
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
     std::cout << "alreadyRoom.size(): "
               << " : " << alreadyRoom.size() << "_size: " << _size << std::endl;
 
+    std::cout << "List room name available: " << std::endl;
+
     for (size_t i = 0; i < alreadyRoom.size(); i++)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
         std::string strname(alreadyRoom[i].name);
-        std::cout << "List room name available: " << strname << std::endl;
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        std::cout << "Name Room: " << strname << std::endl;
+        std::cout << "Topic: " << strname << std::endl;
+        std::cout << "Level: " << strname << std::endl;
+        std::cout << "===========================\n";
     }
 
     if (_size)
@@ -521,7 +607,6 @@ void Client::joinRoom()
         std::string joinRoom;
         std::cout << "Enter room name: ";
         std::cin >> joinRoom;
-        // getline(std::cin, joinRoom);
         bool isRoomname = false;
         int numberQuestion, timeDuratiron;
         bool isRoom = false;
@@ -532,8 +617,8 @@ void Client::joinRoom()
                 isRoom = true;
                 numberQuestion = alreadyRoom[i].numberQuestion;
                 timeDuratiron = alreadyRoom[i].timeDuration;
-                std::cout << "|numberQuestion: " << numberQuestion << " "
-                          << "|timeDuratiron: " << timeDuratiron << "\n";
+                // std::cout << "|numberQuestion: " << numberQuestion << " "
+                //           << "|timeDuratiron: " << timeDuratiron << "\n";
                 send(clientSocket, joinRoom.c_str(), strlen(joinRoom.c_str()), 0);
                 std::string nameUser;
                 std::cout << "Please enter name participant: ";
@@ -552,7 +637,7 @@ void Client::joinRoom()
                     send(clientSocket, &choice, sizeof(choice), 0);
                     if (choice == 1)
                     {
-                        startExam(numberQuestion, timeDuratiron);
+                        startExam(numberQuestion, timeDuratiron, alreadyRoom[i].topic, alreadyRoom[i].level);
                         break;
                     }
                     else if (choice == 2)
@@ -564,6 +649,7 @@ void Client::joinRoom()
                         std::cout << "Please 1 or 2 ";
                     }
                 }
+                break;
             }
         }
         if (!isRoom)
@@ -576,11 +662,12 @@ void Client::joinRoom()
     else
     {
         send(clientSocket, RETURN_MAIN_MENU, sizeof(RETURN_MAIN_MENU), 0);
-        std::cout << "No room\n";
+        std::cout << "No room available\n";
     }
 }
-void Client::startExam(int numberQuestion, int timeDuration)
+void Client::startExam(int numberQuestion, int timeDuration, char topic[100], int level)
 {
+    std::vector<Question> levelquestion;
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
 
@@ -594,110 +681,25 @@ void Client::startExam(int numberQuestion, int timeDuration)
         recv(clientSocket, &ques, sizeof(Question), 0);
         question.push_back(ques);
     }
-    while (true)
+    for (int i = 0; i < question.size(); i++)
     {
-        std::cout << "Are you want choose level and  topic? " << std::endl;
-        std::cout << "choice 1 for Yes\n";
-        std::cout << "choice 2 for No\n";
-        int choice;
-        std::string topic;
-        int level;
-        std::vector<Question> levelquestion;
-        std::cin >> choice;
-        if (choice == 1)
+        if (question[i].level == level && (strcmp(question[i].topic, topic) == 0))
         {
-            while (true)
-            {
-                std::cout << "Choose Topic " << std::endl;
-                std::cout << "1. Math\n";
-                std::cout << "2. Soccer\n";
-                int choice_topic;
-                std::cin >> choice_topic;
-                if (choice_topic == 1)
-                {
-                    topic = "Math";
-                    break;
-                }
-                else if (choice_topic == 2)
-                {
-                    topic = "Soccer";
-                    break;
-                }
-                else
-                {
-                    std::cout << "Please 1 or 2 \n";
-                }
-            }
-            while (true)
-            {
-                std::cout << "Choose level " << std::endl;
-                std::cout << "0. easy\n";
-                std::cout << "1. normal\n";
-                std::cout << "2. difficult\n";
-                std::cout << "3. veryhard\n";
-
-                int choice_level;
-                std::cin >> choice_level;
-                if (choice_level == 0)
-                {
-                    level = 0;
-                    break;
-                }
-                else if (choice_level == 1)
-                {
-                    level = 1;
-                    break;
-                }
-                if (choice_level == 2)
-                {
-                    level = 2;
-                    break;
-                }
-                else if (choice_level == 3)
-                {
-                    level = 3;
-                    break;
-                }
-                else
-                {
-                    std::cout << "Please 0, 1, 2, 3 \n";
-                }
-            }
-            for (int i = 0; i < question.size(); i++)
-            {
-                if (question[i].level == level && (strcmp(question[i].topic, topic.c_str()) == 0))
-                {
-                    levelquestion.push_back(question[i]);
-                }
-            }
-            showTest(levelquestion, timeDuration, numberQuestion);
-            return;
-        }
-        else if (choice == 2)
-        {
-            break;
-        }
-        else
-        {
-            std::cout << "Please 1 or 2 ";
+            levelquestion.push_back(question[i]);
         }
     }
-
-    // recv(clientSocket, &timeDuration, sizeof(timeDuration), 0);
-    std::cout << "|question.size(): " << question.size()
-              << "|timeDuration: " << timeDuration << std::endl;
-    showTest(question, timeDuration, numberQuestion);
+    showTest(levelquestion, timeDuration, numberQuestion);
 }
 void Client::viewStatusRoom()
 {
     int size_vec;
     std::vector<Room> roomInfo;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
 
     for (size_t i = 0; i < size_vec; i++)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         Room room;
         recv(clientSocket, &room, sizeof(room), 0);
@@ -736,11 +738,11 @@ void Client::resultRoom()
     int size_vec;
     std::vector<Room> roomInfo;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
 
     for (size_t i = 0; i < size_vec; i++)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         Room room;
         recv(clientSocket, &room, sizeof(room), 0);
@@ -768,11 +770,11 @@ void Client::trainingMode()
     int size_vec;
     std::vector<Question> question;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
 
     for (size_t i = 0; i < size_vec; i++)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         Question ques;
         recv(clientSocket, &ques, sizeof(ques), 0);
@@ -809,4 +811,11 @@ void Client::viewLogTrace()
     {
         std::cerr << "Can not open file" << std::endl;
     }
+}
+
+void Client::Logout()
+{
+    isLogin = false;
+    isAdmin = false;
+    showMenu();
 }

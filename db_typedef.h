@@ -23,7 +23,9 @@
                                     "timeduration INTEGER,"\
                                     "numberofquestion INTEGER  ,"\
                                     "user TEXT, " \
-                                    "score INTEGER );" 
+                                    "score INTEGER "\
+                                    "level INTEGER, " \
+                                    "topic TEXT );" 
 
 
 #define INSERT_USER "INSERT INTO USERS \
@@ -35,14 +37,14 @@
 
 
 #define INSERT_ROOM "INSERT INTO ROOMS \
-        (nameroom, status, timeduration, numberofquestion, user, score) \
-        VALUES ('%s', '%d', '%d', '%d', '%s', '%s');"
+        (nameroom, status, timeduration, numberofquestion, user, score, level,  topic ) \
+        VALUES ('%s', '%d', '%d', '%d', '%s', '%s', '%d', '%s');"
 
 
 #define SQL_SELECT_ID_USER "SELECT id_user FROM USERS WHERE username = '%s' AND password = '%s';"
 #define SELECT_TABLE_QUESTION "SELECT * FROM QUESTIONS ;"
 #define SELECT_TABLE_ROOM "SELECT * FROM ROOMS ;"
-#define SELECT_ROOM_ISABLE "SELECT id_room FROM ROOM WHERE  "
+// #define SELECT_ROOM_ISABLE "SELECT id_room FROM ROOM WHERE  "
 #define UPDATE_USER_JOIN_ROOM "UPDATE ROOMS SET user = '%s' WHERE NAMEROOM = '%s';"
 #define UPDATE_STATUS_ROOM "update ROOMS set status = '%d' where nameroom = '%s' ;"
 #define GET_TIME_DURATIION "SELECT timeduration FROM ROOMS WHERE NAMEROOM = '%s';"

@@ -2,7 +2,7 @@
 #include "Server.h"
 #include "DbSqlite.h"
 
-Server::Server() : isConnected(true)
+Server::Server() : isConnected(true),isAdmin(false)
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -105,6 +105,10 @@ void Server::start()
             {
                 handleTrainningMode(clientSocket);
             }
+            else if (str_req == LOGOUT)
+            {
+                handleLogout(clientSocket);
+            }
             // else if (str_req == NUMBER_QUESTION_TRAINING_MODE)
             // {
             //     /* code */
@@ -135,7 +139,7 @@ void Server::handleLogin(int clientSocket)
     std::cout << "| user.password: " << user.password << "\n";
     if (!(strcmp(user.username, "admin") && strcmp(user.password, "admin")))
     {
-        // std::cout <<
+        isAdmin = true;
         const char *successMessage = "Ok";
         send(clientSocket, successMessage, strlen(successMessage), 0);
     }
@@ -380,3 +384,6 @@ void Server::handleViewStatusRoom(int clientSocket)
     }
     
 }
+
+void Server::handleLogout(int clientSocket)
+{}

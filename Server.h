@@ -24,6 +24,7 @@ public:
     void handleJoinRoom(int clientSocket);
     void handleStartExam(int clientSocket, Room room);
     void handleViewStatusRoom(int clientSocket);
+    void handleLogout(int clientSocket);
     void closeConnected()
     {
         isConnected = false;
@@ -31,6 +32,7 @@ public:
     ~Server();
 
 private:
+    bool isAdmin;
     bool isConnected;
     int serverSocket;
     sockaddr_in serverAddress;

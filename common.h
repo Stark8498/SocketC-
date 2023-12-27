@@ -51,6 +51,8 @@ struct Room
     int numberQuestion;
     char user[100];
     int score;
+    int level;
+    char topic[100];
 };
 
 #define DB_DIR "user.db"
@@ -58,7 +60,7 @@ struct Room
 #define DB_FILE_NAME "user.db"
 
 
-#define PORT      8001
+#define PORT      8000
 
 #define LOGIN "login"
 #define REGISTER "register"
@@ -72,6 +74,7 @@ struct Room
 #define SUBMIT_EXAM "submit_exam"
 #define TRAINING_MODE "training_mode"
 #define RETURN_MAIN_MENU "return_main" 
+#define LOGOUT "logout"
 #define NUMBER_QUESTION_TRAINING_MODE 20
 #define TIME_FOR_EACH_QUESTION  5 
 

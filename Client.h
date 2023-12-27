@@ -18,6 +18,7 @@ class Client
 {
 public:
     Client();
+    void Logout();
     void connectToServer();
     void showMenu();
     void showSubMenu();
@@ -27,7 +28,7 @@ public:
     void joinRoom();
     void viewStatusRoom();
     void resultRoom();
-    void startExam(int numberQuestion, int timeDuration);
+    void startExam(int numberQuestion, int timeDuration,char topic[100], int level);
     std::string askQuestion(Question q);
     void trainingMode();
     std::vector<Question> getQuestion();
@@ -39,6 +40,8 @@ public:
     ~Client();
 
 private:
+    bool isAdmin;
+    bool isLogin;
     std::ofstream outfile;
     int clientSocket;
     sockaddr_in serverAddress;

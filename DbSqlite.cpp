@@ -84,7 +84,7 @@ DbSqlite::DbSqlite()
     //     {
     //         correctAnswer = "A";
     //         topic = "Math";
-    //         level = 0; 
+    //         level = 0;
 
     //     }
     //     else if( !(i% 4))
@@ -286,16 +286,18 @@ bool DbSqlite::insert_room_data(Room &room)
         char *zErrMsg = 0;
 
         // const int ID_USER = 1;
-        std::cout << __LINE__ << std::endl;
-        std::cout << room.name << " " << room.timeDuration << " " << room.numberQuestion << ""
-                  << room.status << " " << room.score << " " << room.user;
+        // std::cout << __LINE__ << std::endl;
+        // std::cout << room.name << " " << room.timeDuration << " " << room.numberQuestion << ""
+        //           << room.status << " " << room.score << " " << room.user;
         snprintf(sql, MAX_SIZE, INSERT_ROOM,
                  room.name,
                  room.status,
                  room.timeDuration,
                  room.numberQuestion,
                  room.user,
-                 room.score);
+                 room.score,
+                 room.level,
+                 room.topic);
         std::cout << __LINE__ << std::endl;
 
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
@@ -445,10 +447,29 @@ bool DbSqlite::get_room_info(std::vector<Room> &room)
             tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 5)));
             strncpy(roominfo.user, tmp, 99);
             roominfo.user[99] = '\0';
-            // std::cout << "|roominfo. name: " << roominfo.name
-            // << "; " << "|roominfo.status: " << roominfo.status << std::endl;
 
             roominfo.score = sqlite3_column_int(stmt, 6);
+            roominfo.level = sqlite3_column_int(stmt, 7);
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 8)));
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+            if (tmp != nullptr)
+            {
+                strncpy(roominfo.topic, tmp, 99);
+                roominfo.topic[99] = '\0';
+            }
+            else
+            {
+                return false;
+            }
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+            std::cout << "|roominfo. name: " << roominfo.name
+                      << "; "
+                      << "|roominfo.status: " << roominfo.status << std::endl;
+
+            delete tmp;
             room.push_back(roominfo);
         }
         sqlite3_free(stmt);
