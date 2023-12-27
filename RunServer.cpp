@@ -2,8 +2,13 @@
 
 int main()
 {
-    Server server;
-    server.start();
+    while (true)
+    {
+       Server server;
+        server.start();
+    }
+    
+    
 
     return 0;
 }

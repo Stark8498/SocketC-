@@ -2,7 +2,16 @@
 #include "Server.h"
 #include "DbSqlite.h"
 
-Server::Server() : isConnected(true),isAdmin(false)
+Server::Server() : isConnected(true), isAdmin(false)
+{
+}
+
+Server::~Server()
+{
+    // close(serverSocket);
+}
+
+void Server::start()
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -24,23 +33,15 @@ Server::Server() : isConnected(true),isAdmin(false)
         std::cerr << "Error listening on socket\n";
         exit(EXIT_FAILURE);
     }
+
     std::cout << "Server is listening on port 8888...\n";
-}
-
-Server::~Server()
-{
-    close(serverSocket);
-}
-
-void Server::start()
-{
-    while (isConnected)
+    while (true)
     {
-        int clientSocket = accept(serverSocket, nullptr, nullptr);
-        if (!isConnected)
+        int clientSocket = accept(serverSocket, NULL, NULL);
+        if (clientSocket == -1)
         {
-            // Nếu kết nối đã đóng, thoát khỏi vòng lặp
-            break;
+            std::cerr << "Error accepting connection: " << strerror(errno) << std::endl;
+            continue;
         }
         // Send confirmation to the client
         const char *confirmationMessage = "Connection established. Welcome to the server!";
@@ -109,6 +110,10 @@ void Server::start()
             {
                 handleLogout(clientSocket);
             }
+            else
+            {
+                break;
+            }
             // else if (str_req == NUMBER_QUESTION_TRAINING_MODE)
             // {
             //     /* code */
@@ -164,7 +169,7 @@ void Server::handleRegistration(int clientSocket)
 
     // Receive new username and password from the client
     recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::cout << "|tin nhan tu regis server: " << buffer << std::endl;
+    // std::cout << "|tin nhan tu regis server: " << buffer << std::endl;
 
     // Extract new username and password from the received string
     std::string credentials(buffer);
@@ -178,6 +183,20 @@ void Server::handleRegistration(int clientSocket)
     std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
     // DbSqlite::getInstance()->insert_user_data(user);
     std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+    std::vector<User> userinfo;
+    DbSqlite::getInstance()->get_user_info(userinfo);
+    for (size_t i = 0; i < userinfo.size(); i++)
+    {
+        if (username == userinfo[i].username)
+        {
+            std::cout << "Regis oke";
+            const char *successMessage = "User name already exists " ;
+            send(clientSocket, successMessage, strlen(successMessage), 0);
+            return;
+        }
+        
+    }
+    
     if (DbSqlite::getInstance()->insert_user_data(user))
     {
         std::cout << "Regis oke";
@@ -357,7 +376,7 @@ void Server::handleStartExam(int clientSocket, Room room)
 }
 void Server::handleViewRusultRoom(int clientSocket)
 {
-      std::vector<Room> roomInfo;
+    std::vector<Room> roomInfo;
     DbSqlite::getInstance()->get_room_info(roomInfo);
     int _size = roomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
@@ -367,7 +386,6 @@ void Server::handleViewRusultRoom(int clientSocket)
         Room room = roomInfo[i];
         send(clientSocket, &room, sizeof(room), 0);
     }
-    
 }
 
 void Server::handleViewStatusRoom(int clientSocket)
@@ -382,8 +400,8 @@ void Server::handleViewStatusRoom(int clientSocket)
         Room room = roomInfo[i];
         send(clientSocket, &room, sizeof(room), 0);
     }
-    
 }
 
 void Server::handleLogout(int clientSocket)
-{}
+{
+}

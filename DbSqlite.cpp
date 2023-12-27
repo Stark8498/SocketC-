@@ -583,3 +583,51 @@ bool DbSqlite::update_timeDuration(Room &room)
     }
     return true;
 }
+bool DbSqlite::get_user_info(std::vector<User> &user)
+{
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+    if (db_ready)
+    {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        sqlite3_stmt *stmt;
+        int ret = sqlite3_prepare_v2(db, SELECT_TABLE_USERS, -1, &stmt, NULL);
+        if (ret != SQLITE_OK)
+        {
+            fprintf(stderr, "Get data from USERS error: %s\n");
+            sqlite3_free(stmt);
+            return false;
+        }
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            User userinfo;
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+            userinfo.id = sqlite3_column_int(stmt, 0);
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
+            if (tmp == nullptr)
+            {
+                return false;
+            }
+            
+            strncpy(userinfo.username, tmp, 99);
+            userinfo.username[99] = '\0';
+
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
+            if (tmp == nullptr)
+            {
+                return false;
+            }
+            strncpy(userinfo.password, tmp, 99);
+            userinfo.password[99] = '\0';
+
+            delete tmp;
+            user.push_back(userinfo);
+        }
+        sqlite3_free(stmt);
+
+        return true;
+    }
+
+    return false;
+}

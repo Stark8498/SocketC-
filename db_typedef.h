@@ -49,6 +49,7 @@
 #define UPDATE_STATUS_ROOM "update ROOMS set status = '%d' where nameroom = '%s' ;"
 #define GET_TIME_DURATIION "SELECT timeduration FROM ROOMS WHERE NAMEROOM = '%s';"
 #define UPDATE_TIME_DURATION "UPDATE ROOMS SET TIMEDURATION = '%d' WHERE NAMEROOM ='%s' ;"
+#define SELECT_TABLE_USERS "SELECT * FROM USERS"
 
 
 

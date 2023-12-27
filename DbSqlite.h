@@ -20,6 +20,7 @@ class DbSqlite
         bool get_timeDuration(std::string nameRoom, int &timeDuration);
         bool update_timeDuration(Room &room);
         bool get_room_info(std::vector <Room> &room);
+        bool get_user_info(std::vector<User> &user);
         bool get_question_info(std::vector<Question> &question);
 
 
