@@ -327,6 +327,8 @@ void Client::createExamRoom()
     std::cout << "Enter Topic: ";
 
     std::cin >> roominfo.topic;
+    std::cout << "Enter level: ";
+
     int levelcin;
     std::cin >> levelcin;
     do
@@ -695,7 +697,7 @@ void Client::viewStatusRoom()
     int size_vec;
     std::vector<Room> roomInfo;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
-    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
+    // std::cout << __LINE__ <<" : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
 
     for (size_t i = 0; i < size_vec; i++)
     {

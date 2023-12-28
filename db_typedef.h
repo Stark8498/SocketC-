@@ -23,7 +23,7 @@
                                     "timeduration INTEGER,"\
                                     "numberofquestion INTEGER  ,"\
                                     "user TEXT, " \
-                                    "score INTEGER "\
+                                    "score INTEGER, "\
                                     "level INTEGER, " \
                                     "topic TEXT );" 
 

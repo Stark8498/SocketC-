@@ -61,58 +61,58 @@ DbSqlite::DbSqlite()
     tableCreateQuery.push_back(CREATE_ROOM_TABLE_SQL);
 
     db_ready = create_db();
-    // Question questions;
-    // for (int i = 1; i <= 30; ++i)
-    // {
-    //     std::string question = "Question " + std::to_string(i);
-    //     strncpy(questions.content, question.c_str(), sizeof(questions.content));
-    //     std::string answerA = "Option A for Question " + std::to_string(i);
-    //     strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+    Question questions;
+    for (int i = 1; i <= 30; ++i)
+    {
+        std::string question = "Question " + std::to_string(i);
+        strncpy(questions.content, question.c_str(), sizeof(questions.content));
+        std::string answerA = "Option A for Question " + std::to_string(i);
+        strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-    //     std::string answerB = "Option B for Question " + std::to_string(i);
-    //     strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+        std::string answerB = "Option B for Question " + std::to_string(i);
+        strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-    //     std::string answerC = "Option C for Question " + std::to_string(i);
-    //     strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+        std::string answerC = "Option C for Question " + std::to_string(i);
+        strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-    //     std::string answerD = "Option D for Question " + std::to_string(i);
-    //     strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-    //     std::string correctAnswer;
-    //     std::string topic;
-    //     int level;
-    //     if (!(i % 3))
-    //     {
-    //         correctAnswer = "A";
-    //         topic = "Math";
-    //         level = 0;
+        std::string answerD = "Option D for Question " + std::to_string(i);
+        strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+        std::string correctAnswer;
+        std::string topic;
+        int level;
+        if (!(i % 3))
+        {
+            correctAnswer = "A";
+            topic = "Math";
+            level = 0;
 
-    //     }
-    //     else if( !(i% 4))
-    //     {
-    //         correctAnswer = "A";
-    //         topic = "Soccer";
-    //         level = 1;
-    //     }
-    //     else if( !(i% 5))
-    //     {
-    //         correctAnswer = "C";
-    //         topic = "Soccer";
-    //         level = 2;
-    //     }
-    //     else
-    //     {
-    //         correctAnswer = "B";
-    //         topic = "Math";
-    //         level = 3;
-    //     }
+        }
+        else if( !(i% 4))
+        {
+            correctAnswer = "A";
+            topic = "Soccer";
+            level = 1;
+        }
+        else if( !(i% 5))
+        {
+            correctAnswer = "C";
+            topic = "Soccer";
+            level = 2;
+        }
+        else
+        {
+            correctAnswer = "B";
+            topic = "Math";
+            level = 3;
+        }
 
-    //     strncpy(questions.correctAnswer, correctAnswer.c_str(), sizeof(questions.correctAnswer));
-    //     strncpy(questions.topic, topic.c_str(), sizeof(questions.topic));
-    //     questions.level = level;
+        strncpy(questions.correctAnswer, correctAnswer.c_str(), sizeof(questions.correctAnswer));
+        strncpy(questions.topic, topic.c_str(), sizeof(questions.topic));
+        questions.level = level;
 
-    //     std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
-    //     insert_question_data(questions);
-    // }
+        std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+        insert_question_data(questions);
+    }
 }
 
 /**
@@ -469,7 +469,7 @@ bool DbSqlite::get_room_info(std::vector<Room> &room)
                       << "; "
                       << "|roominfo.status: " << roominfo.status << std::endl;
 
-            delete tmp;
+            // delete tmp;
             room.push_back(roominfo);
         }
         sqlite3_free(stmt);
@@ -621,7 +621,7 @@ bool DbSqlite::get_user_info(std::vector<User> &user)
             strncpy(userinfo.password, tmp, 99);
             userinfo.password[99] = '\0';
 
-            delete tmp;
+            // delete tmp;
             user.push_back(userinfo);
         }
         sqlite3_free(stmt);
