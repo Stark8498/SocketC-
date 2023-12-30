@@ -4,15 +4,6 @@
 
 Server::Server() : isConnected(true), isAdmin(false)
 {
-}
-
-Server::~Server()
-{
-    // close(serverSocket);
-}
-
-void Server::start()
-{
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (serverSocket == -1)
@@ -33,15 +24,27 @@ void Server::start()
         std::cerr << "Error listening on socket\n";
         exit(EXIT_FAILURE);
     }
-
     std::cout << "Server is listening on port 8888...\n";
-    while (true)
+}
+
+Server::~Server()
+{
+    // close(serverSocket);
+}
+
+void Server::start()
+{
+    std::cout << "[LINE] " << __LINE__
+              << " FUNC: " << __FUNCTION__<< "\n";
+    while (isConnected)
     {
-        int clientSocket = accept(serverSocket, NULL, NULL);
-        if (clientSocket == -1)
+        std::cout << "[LINE] " << __LINE__
+                  << " FUNC: " << __FUNCTION__<< "\n";
+        int clientSocket = accept(serverSocket, nullptr, nullptr);
+        if (!isConnected)
         {
-            std::cerr << "Error accepting connection: " << strerror(errno) << std::endl;
-            continue;
+            // Nếu kết nối đã đóng, thoát khỏi vòng lặp
+            break;
         }
         // Send confirmation to the client
         const char *confirmationMessage = "Connection established. Welcome to the server!";
@@ -144,17 +147,23 @@ void Server::handleLogin(int clientSocket)
     std::cout << "| user.password: " << user.password << "\n";
     if (!(strcmp(user.username, "admin") && strcmp(user.password, "admin")))
     {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
         isAdmin = true;
         const char *successMessage = "Ok";
         send(clientSocket, successMessage, strlen(successMessage), 0);
     }
     else if (DbSqlite::getInstance()->search_id_user(user) != -1)
     {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
         const char *successMessage = "Ok";
         send(clientSocket, successMessage, strlen(successMessage), 0);
     }
     else
     {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
         const char *errorMessage = "NotOk";
         send(clientSocket, errorMessage, strlen(errorMessage), 0);
     }
@@ -190,13 +199,12 @@ void Server::handleRegistration(int clientSocket)
         if (username == userinfo[i].username)
         {
             std::cout << "Regis oke";
-            const char *successMessage = "User name already exists " ;
+            const char *successMessage = "User name already exists ";
             send(clientSocket, successMessage, strlen(successMessage), 0);
             return;
         }
-        
     }
-    
+
     if (DbSqlite::getInstance()->insert_user_data(user))
     {
         std::cout << "Regis oke";
@@ -230,10 +238,58 @@ void Server::handleCreateExamRoom(int clientSocket)
     // close(serverSocket);
 
     std::cout << roominfo.name << " " << roominfo.numberQuestion << " "
-              << roominfo.numberQuestion << "\n";
+              << roominfo.easy << " " << roominfo.topic << "\n";
     // std::cout << timeDuration << std::endl;
 
     DbSqlite::getInstance()->insert_room_data(roominfo);
+    Question questions;
+    for (int i = 1; i <= roominfo.numberQuestion * 2; ++i)
+    {
+        std::string question = "Question " + std::to_string(i);
+        strncpy(questions.content, question.c_str(), sizeof(questions.content));
+        std::string answerA = "Option A for Question " + std::to_string(i);
+        strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+        std::string answerB = "Option B for Question " + std::to_string(i);
+        strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+        std::string answerC = "Option C for Question " + std::to_string(i);
+        strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+        std::string answerD = "Option D for Question " + std::to_string(i);
+        strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+        std::string correctAnswer;
+        std::string topic;
+        topic = roominfo.topic;
+        int level;
+        if (i < roominfo.easy * 2)
+        {
+            correctAnswer = "A";
+            level = 0;
+        }
+        else if (i > roominfo.easy * 2 && i < roominfo.normal * 2)
+        {
+            correctAnswer = "A";
+            level = 1;
+        }
+        else if (i > roominfo.normal * 2 && i < roominfo.difficult * 2)
+        {
+            correctAnswer = "C";
+            level = 2;
+        }
+        else
+        {
+            correctAnswer = "B";
+            level = 3;
+        }
+
+        strncpy(questions.correctAnswer, correctAnswer.c_str(), sizeof(questions.correctAnswer));
+        strncpy(questions.topic, topic.c_str(), sizeof(questions.topic));
+        questions.level = level;
+
+        // std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+        DbSqlite::getInstance()->insert_question_data(questions);
+    }
 }
 
 void Server::handleSetNumberOfQuestions(int clientSocket)
@@ -253,7 +309,17 @@ void Server::handleSetExamDuration(int clientSocket)
     send(clientSocket, &roomInfo[0], roomInfo.size() * sizeof(roomInfo), 0);
 
     Room room;
-    recv(clientSocket, &room, sizeof(room), 0);
+    char name[1024];
+    recv(clientSocket, &name, sizeof(name), 0);
+    std::string nameStr(name);
+    if (nameStr == RETURN_MAIN_MENU)
+    {
+        return;
+    }
+
+    int timeDur;
+    recv(clientSocket, &timeDur, sizeof(timeDur), 0);
+    strcpy(room.name, name);
     DbSqlite::getInstance()->update_timeDuration(room);
     std::cout << "Handling set exam duration request\n";
     // insert number durration
@@ -362,17 +428,18 @@ void Server::handleStartExam(int clientSocket, Room room)
         Question ques = question[i];
         send(clientSocket, &ques, sizeof(ques), 0);
     }
-
-    // for (const Question& ques : question) {
-    //     send(clientSocket, &ques, sizeof(question), 0);
-    // }
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+    char nameRoom[1024];
+    memset(nameRoom, 0, sizeof(nameRoom));
+    recv(clientSocket, &nameRoom, sizeof(nameRoom), 0);
+    std::cout << "||joinNameCHAR: " <<  nameRoom << "\n";
 
-    // send(clientSocket, &question[0], question.size() * sizeof(question), 0);
-    // int timeDuration;
-    // DbSqlite::getInstance()->get_timeDuration(room.name, timeDuration);
-    // std::cout << "|timeDuration: " << timeDuration << std::endl;
-    // send(clientSocket, &timeDuration, sizeof(timeDuration), 0);
+    std::string joinName(nameRoom);
+    std::cout << "||joinName: " <<  joinName;
+    int score;
+    recv(clientSocket, &score, sizeof(score), 0);
+    DbSqlite::getInstance()->set_score_room(score, joinName);
+
 }
 void Server::handleViewRusultRoom(int clientSocket)
 {

@@ -22,6 +22,8 @@
 #include <arpa/inet.h>
 #include <sqlite3.h>
 #include <fstream>
+#include <regex>
+
 /*0 -- easy, 1-- normal, 2-- difficult, 3-- veryhard*/
 struct Question {
     int id;
@@ -51,7 +53,10 @@ struct Room
     int numberQuestion;
     char user[100];
     int score;
-    int level;
+    int easy;
+    int normal;
+    int difficult;
+    int veryhard;
     char topic[100];
 };
 
@@ -75,8 +80,9 @@ struct Room
 #define TRAINING_MODE "training_mode"
 #define RETURN_MAIN_MENU "return_main" 
 #define LOGOUT "logout"
-#define NUMBER_QUESTION_TRAINING_MODE 20
-#define TIME_FOR_EACH_QUESTION  5 
+#define NUMBER_QUESTION_TRAINING_MODE 10
+#define TIME_FOR_EACH_QUESTION  2
+
 
 
 #endif // MY_HEADER_FILE_H

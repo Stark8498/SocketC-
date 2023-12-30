@@ -1,4 +1,5 @@
 #pragma once 
+#include "common.h"
 #include <sqlite3.h>
 #include "db_typedef.h"
 #include "DbSqlite.h"
@@ -22,6 +23,7 @@ class DbSqlite
         bool get_room_info(std::vector <Room> &room);
         bool get_user_info(std::vector<User> &user);
         bool get_question_info(std::vector<Question> &question);
+        bool set_score_room(int score, std::string nameRoom);
 
 
     private:

@@ -24,7 +24,10 @@
                                     "numberofquestion INTEGER  ,"\
                                     "user TEXT, " \
                                     "score INTEGER, "\
-                                    "level INTEGER, " \
+                                    "easy INTEGER, " \
+                                    "normal INTEGER, " \
+                                    "difficult INTEGER, " \
+                                    "veryhard INTEGER, " \
                                     "topic TEXT );" 
 
 
@@ -32,13 +35,13 @@
         (username, password) VALUES ('%s', '%s');"
 
 #define INSERT_QUESTION "INSERT INTO QUESTIONS \
-                         (question, answer_a, answer_b, answer_c, answer_d, correct_answer, topic, level_question ) \
-                         VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d');"
+                                (question, answer_a, answer_b, answer_c, answer_d, correct_answer, topic, level_question ) \
+                         VALUES ('%s',       '%s',      '%s',     '%s',    '%s',        '%s',       '%s',    '%d');"
 
 
 #define INSERT_ROOM "INSERT INTO ROOMS \
-        (nameroom, status, timeduration, numberofquestion, user, score, level,  topic ) \
-        VALUES ('%s', '%d', '%d', '%d', '%s', '%s', '%d', '%s');"
+                (nameroom, status, timeduration, numberofquestion, user, score,   easy,   normal,  difficult , veryhard,  topic ) \
+        VALUES (    '%s',   '%d',    '%d',        '%d',            '%s',  '%d',   '%d',   '%d',       '%d' ,     '%d',     '%s');"
 
 
 #define SQL_SELECT_ID_USER "SELECT id_user FROM USERS WHERE username = '%s' AND password = '%s';"
@@ -50,6 +53,7 @@
 #define GET_TIME_DURATIION "SELECT timeduration FROM ROOMS WHERE NAMEROOM = '%s';"
 #define UPDATE_TIME_DURATION "UPDATE ROOMS SET TIMEDURATION = '%d' WHERE NAMEROOM ='%s' ;"
 #define SELECT_TABLE_USERS "SELECT * FROM USERS"
+#define UPDAT_SCORE "UPDATE ROOMS SET SCORE = '%d'  WHERE NAMEROOM = '%s' ;"
 
 
 

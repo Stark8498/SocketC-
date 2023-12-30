@@ -13,6 +13,10 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
+#include <vector>
+#include <regex.h>
+#include <regex>
+#include "DbSqlite.h"
 
 class Client
 {
@@ -28,14 +32,17 @@ public:
     void joinRoom();
     void viewStatusRoom();
     void resultRoom();
-    void startExam(int numberQuestion, int timeDuration,char topic[100], int level);
+    void startExam(std::string joinRoom, int numberQuestion, int timeDuration,char topic[100],
+                   int easy, int normal, int difficult, int veryhard);
     std::string askQuestion(Question q);
     void trainingMode();
     std::vector<Question> getQuestion();
     void setNumberOfQuestions();
     void setExamDuration();
     void viewLogTrace();
-    void showTest(std::vector<Question> question, int timeDuration, int numberQuestion);
+    void showTest(std::vector<Question> question, int timeDuration, int numberQuestion,
+                    int &correct_answer,
+                    bool isTraining);
     void handleMenuChoice(int choice);
     ~Client();
 

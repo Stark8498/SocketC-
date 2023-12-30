@@ -14,7 +14,7 @@ OBJS_CLIENT := $(SRCS_CLIENT:.cpp=.o)
 TARGET_CLIENT := client
 
 # Compiler flags
-CXXFLAGS := -Wall -std=c++11
+CXXFLAGS :=  -std=c++11
 
 # Linker flags
 LDFLAGS := -lsqlite3
