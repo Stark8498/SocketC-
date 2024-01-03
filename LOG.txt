@@ -1,12 +1,2 @@
 ---Hello, init Client, start log----
 Server response: Connection established. Welcome to the server!
-Join room Successfull
-Number of correct answers: 1/10
-Result Room: 
-phuc: phuc: 0
-Result Room: 
-mathroom: a: 0
-Result Room: 
-: : 0
-Result Room: 
-room1: phuc1: 1

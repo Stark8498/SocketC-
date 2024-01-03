@@ -16,19 +16,38 @@
                                     "correct_answer TEXT,"\
                                     "topic TEXT,"\
                                     "level_question INT);"
-#define CREATE_ROOM_TABLE_SQL    "CREATE TABLE ROOMS (" \
-                                    "id_room INTEGER PRIMARY KEY AUTOINCREMENT, " \
-                                    "nameroom TEXT, " \
-                                    "status INT,"\
-                                    "timeduration INTEGER,"\
-                                    "numberofquestion INTEGER  ,"\
-                                    "user TEXT, " \
-                                    "score INTEGER, "\
-                                    "easy INTEGER, " \
-                                    "normal INTEGER, " \
-                                    "difficult INTEGER, " \
-                                    "veryhard INTEGER, " \
-                                    "topic TEXT );" 
+// #define CREATE_ROOM_TABLE_SQL    "CREATE TABLE ROOMS (" \
+//                                     "id_room INTEGER PRIMARY KEY AUTOINCREMENT, " \
+//                                     "nameroom TEXT, " \
+//                                     "status INT,"\
+//                                     "timeduration INTEGER,"\
+//                                     "numberofquestion INTEGER  ,"\
+//                                     "user TEXT, " \
+//                                     "score INTEGER, "\
+//                                     "easy INTEGER, " \
+//                                     "normal INTEGER, " \
+//                                     "difficult INTEGER, " \
+//                                     "veryhard INTEGER, " \
+//                                     "topic TEXT );" 
+
+#define CREATE_TABLE_TOTAL_ROOM    "CREATE TABLE TOTALROOM (" \
+                                        "id INTEGER PRIMARY KEY AUTOINCREMENT,"\
+                                        "STATUS INT , "\
+                                        "timeduration INT,"\
+                                        "EASY INT ,"\
+                                        "NORMAL INT ,"\
+                                        "DIFFICULT INT , "\
+                                        "VERYHARD INT ,"\
+                                        "TOPIC INT ," \                                     
+                                        "ROOMNAME VARCHAR(255) NOT NULL UNIQUE);  "
+
+#define  CREATE_INFO_ROOM       "CREATE TABLE INFOROOM ( "\
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT,"\
+                                "id_total INT,"\
+                                "user TEXT, " \
+                                "score INTEGER, "\
+                                "FOREIGN KEY (id_total) REFERENCES TOTALROOM(id) );"
+
 
 
 #define INSERT_USER "INSERT INTO USERS \
@@ -44,17 +63,35 @@
         VALUES (    '%s',   '%d',    '%d',        '%d',            '%s',  '%d',   '%d',   '%d',       '%d' ,     '%d',     '%s');"
 
 
+
+#define INSERT_TOTAL_ROOM "INSERT INTO TOTALROOM \
+                (STATUS, timeduration, EASY,   NORMAL,  DIFFICULT , VERYHARD,  TOPIC , ROOMNAME) \
+        VALUES (  '%d',    '%d',       '%d',   '%d',       '%d' ,     '%d',     '%s',    '%s');"
+
 #define SQL_SELECT_ID_USER "SELECT id_user FROM USERS WHERE username = '%s' AND password = '%s';"
 #define SELECT_TABLE_QUESTION "SELECT * FROM QUESTIONS ;"
-#define SELECT_TABLE_ROOM "SELECT * FROM ROOMS ;"
+#define SELECT_TABLE_ROOM "SELECT * FROM TOTALROOM ;"
 // #define SELECT_ROOM_ISABLE "SELECT id_room FROM ROOM WHERE  "
-#define UPDATE_USER_JOIN_ROOM "UPDATE ROOMS SET user = '%s' WHERE NAMEROOM = '%s';"
+#define UPDATE_USER_JOIN_ROOM "INSERT INTO  INFOROOM (id_total, user) VALUES ('%d', '%s');"
+#define UPDATE_SCORE_JOIN_ROOM "INSERT INTO  INFOROOM (id_total, user, SCORE) VALUES ('%d', '%s', '%d');"
+
 #define UPDATE_STATUS_ROOM "update ROOMS set status = '%d' where nameroom = '%s' ;"
 #define GET_TIME_DURATIION "SELECT timeduration FROM ROOMS WHERE NAMEROOM = '%s';"
-#define UPDATE_TIME_DURATION "UPDATE ROOMS SET TIMEDURATION = '%d' WHERE NAMEROOM ='%s' ;"
+#define UPDATE_TIME_DURATION "UPDATE TOTALROOM SET TIMEDURATION = '%d' WHERE ROOMNAME ='%s' ;"
 #define SELECT_TABLE_USERS "SELECT * FROM USERS"
 #define UPDAT_SCORE "UPDATE ROOMS SET SCORE = '%d'  WHERE NAMEROOM = '%s' ;"
+#define INSERT_NAME_TOTAL_ROOM  "INSERT INTO TOTALROOM (ROOMNAME) VALUES ('%s');"
+// #define INSERT_ALL_TOTALROOM ""
 
+#define SELECT_ALL_ROOM "SELECT * FROM TOTALROOM; "
 
+#define SELECT_INFO_ROOM "SELECT * FROM '%s' ;"
 
+#define SELECT_ID_TOTAL_ROOM  "SELECT ID FROM TOTALROOM WHERE ROOMNAME = '%s';"
+
+#define INSERT_USER_INTO_INFOROOM "INSERT INTO INFOROOM (id_total,  user , SCORE) VALUES ('%d', '%s' , '%d');"
+
+#define SELECT_ALL_INFOROOM "SELECT * FROM INFOROOM ;"
+
+#define SELECT_NAME_ROOM_FROM_ID "SELECT ROOMNAME FROM TOTALROOM WHERE ID = '%d' ;"
 

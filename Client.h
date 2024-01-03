@@ -32,7 +32,7 @@ public:
     void joinRoom();
     void viewStatusRoom();
     void resultRoom();
-    void startExam(std::string joinRoom, int numberQuestion, int timeDuration,char topic[100],
+    void startExam(std::string joinRoom, int numberQuestion, int timeDuration, std::string topic,
                    int easy, int normal, int difficult, int veryhard);
     std::string askQuestion(Question q);
     void trainingMode();

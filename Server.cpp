@@ -35,11 +35,11 @@ Server::~Server()
 void Server::start()
 {
     std::cout << "[LINE] " << __LINE__
-              << " FUNC: " << __FUNCTION__<< "\n";
+              << " FUNC: " << __FUNCTION__ << "\n";
     while (isConnected)
     {
         std::cout << "[LINE] " << __LINE__
-                  << " FUNC: " << __FUNCTION__<< "\n";
+                  << " FUNC: " << __FUNCTION__ << "\n";
         int clientSocket = accept(serverSocket, nullptr, nullptr);
         if (!isConnected)
         {
@@ -222,7 +222,7 @@ void Server::handleRegistration(int clientSocket)
 void Server::handleCreateExamRoom(int clientSocket)
 {
     std::cout << "|Insight Create Room\n";
-    Room roominfo;
+    Total_room roominfo;
     std::cout << __LINE__ << std::endl;
     // int timeDuration;
     if (recv(clientSocket, &roominfo, sizeof(roominfo), 0) == -1)
@@ -237,13 +237,13 @@ void Server::handleCreateExamRoom(int clientSocket)
     // }
     // close(serverSocket);
 
-    std::cout << roominfo.name << " " << roominfo.numberQuestion << " "
-              << roominfo.easy << " " << roominfo.topic << "\n";
+    // std::cout << roominfo.name << " " << roominfo.numberQuestion << " "
+    //           << roominfo.easy << " " << roominfo.topic << "\n";
     // std::cout << timeDuration << std::endl;
-
+    int numberQuestion = roominfo.easy + roominfo.normal + roominfo.difficult + roominfo.veryhard;
     DbSqlite::getInstance()->insert_room_data(roominfo);
     Question questions;
-    for (int i = 1; i <= roominfo.numberQuestion * 2; ++i)
+    for (int i = 1; i <= numberQuestion * 2; ++i)
     {
         std::string question = "Question " + std::to_string(i);
         strncpy(questions.content, question.c_str(), sizeof(questions.content));
@@ -301,14 +301,19 @@ void Server::handleSetNumberOfQuestions(int clientSocket)
 void Server::handleSetExamDuration(int clientSocket)
 {
     std::cout << "|insight handle set exem duration\n";
-    std::vector<Room> roomInfo;
+    std::vector<Total_room> roomInfo;
     std::cout << __LINE__ << std::endl;
     DbSqlite::getInstance()->get_room_info(roomInfo);
     int size = roomInfo.size();
     send(clientSocket, &size, sizeof(size), 0);
-    send(clientSocket, &roomInfo[0], roomInfo.size() * sizeof(roomInfo), 0);
+    for (int i = 0; i < roomInfo.size(); i++)
+    {
+        Total_room room_p = roomInfo[i];
+        send(clientSocket, &room_p, sizeof(room_p), 0);
+    }
+    
 
-    Room room;
+    Total_room room;
     char name[1024];
     recv(clientSocket, &name, sizeof(name), 0);
     std::string nameStr(name);
@@ -345,9 +350,8 @@ void Server::handleTrainningMode(int clientSocket)
 }
 void Server::handleJoinRoom(int clientSocket)
 {
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-    std::vector<Room> roomInfo;
-    std::vector<Room> alreadyRoomInfo;
+    std::vector<Total_room> roomInfo;
+    std::vector<Total_room> alreadyRoomInfo;
 
     DbSqlite::getInstance()->get_room_info(roomInfo);
     std::cout << __LINE__ << " : " << __FUNCTION__ << "roomInfo: " << roomInfo.size() << std::endl;
@@ -363,22 +367,22 @@ void Server::handleJoinRoom(int clientSocket)
             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
             std::cout << "|room available: " << roomInfo[i].name << " " << std::endl;
             std::cout << "|timeduration: " << roomInfo[i].timeDuration << " " << std::endl;
-            std::cout << "|numberofquestion: " << roomInfo[i].numberQuestion << " " << std::endl;
             alreadyRoomInfo.push_back(roomInfo[i]);
         }
     }
     int _size = alreadyRoomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
 
-    for (const Room &room : alreadyRoomInfo)
+    for (const Total_room &room : alreadyRoomInfo)
     {
-        send(clientSocket, &room, sizeof(Room), 0);
+        send(clientSocket, &room, sizeof(room), 0);
     }
     // send(clientSocket, &alreadyRoomInfo[0], alreadyRoomInfo.size() * sizeof(alreadyRoomInfo), 0);
 
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
     recv(clientSocket, buffer, sizeof(buffer), 0);
+
     std::string strNameRoom(buffer);
     std::cout << "|strNameRoom: " << strNameRoom << std::endl;
     if (strNameRoom == RETURN_MAIN_MENU)
@@ -389,37 +393,33 @@ void Server::handleJoinRoom(int clientSocket)
     memset(buffer, 0, sizeof(buffer));
     recv(clientSocket, buffer, sizeof(buffer), 0);
     std::string strNameUser(buffer);
-
-    DbSqlite::getInstance()->update_user_room(strNameUser, strNameRoom);
-
-    Room room;
-    strncpy(room.name, strNameRoom.c_str(), sizeof(room.name));
-    strncpy(room.user, strNameUser.c_str(), sizeof(room.user));
-    // room.name = strNameRoom.c_str();
-    // room.user = strNameUser.c_str();
+    int id_room = DbSqlite::getInstance()->get_id_total_room(strNameRoom);
     int reqRoom;
     recv(clientSocket, &reqRoom, sizeof(reqRoom), 0);
     if (reqRoom == 1)
     {
-        handleStartExam(clientSocket, room);
+        handleStartExam(clientSocket, id_room, strNameUser);
     }
     else
     {
         return;
     }
 }
-void Server::handleStartExam(int clientSocket, Room room)
+void Server::handleStartExam(int clientSocket, int id_room, std::string user)
 {
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
     std::vector<Question> question;
     DbSqlite::getInstance()->get_question_info(question);
     int _size = question.size();
+
     std::cout << __LINE__ << " : " << __FUNCTION__ << "|question.size(): "
               << question.size() << std::endl;
 
     send(clientSocket, &_size, sizeof(_size), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+    int _size_p = 10;
+    send(clientSocket, &_size_p, sizeof(_size_p), 0);
+    std::cout << __LINE__ << " : " << __FUNCTION__ << _size << std::endl;
 
     for (size_t i = 0; i < question.size(); i++)
     {
@@ -429,42 +429,37 @@ void Server::handleStartExam(int clientSocket, Room room)
         send(clientSocket, &ques, sizeof(ques), 0);
     }
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-    char nameRoom[1024];
-    memset(nameRoom, 0, sizeof(nameRoom));
-    recv(clientSocket, &nameRoom, sizeof(nameRoom), 0);
-    std::cout << "||joinNameCHAR: " <<  nameRoom << "\n";
-
-    std::string joinName(nameRoom);
-    std::cout << "||joinName: " <<  joinName;
     int score;
     recv(clientSocket, &score, sizeof(score), 0);
-    DbSqlite::getInstance()->set_score_room(score, joinName);
-
+    DbSqlite::getInstance()->insert_userscore_inforoom(id_room, user, score);
 }
 void Server::handleViewRusultRoom(int clientSocket)
 {
-    std::vector<Room> roomInfo;
-    DbSqlite::getInstance()->get_room_info(roomInfo);
+    std::vector<Room_info> roomInfo;
+    DbSqlite::getInstance()->get_info_inforoom(roomInfo);
     int _size = roomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
-
     for (size_t i = 0; i < roomInfo.size(); i++)
     {
-        Room room = roomInfo[i];
-        send(clientSocket, &room, sizeof(room), 0);
+        Room_result result;
+        std::string nameStr = DbSqlite::getInstance()->get_namemroom_from_id(roomInfo[i].id_totalroom);
+        strcmp(result.name, nameStr.c_str());
+        strcmp(result.user, roomInfo[i].user);
+        result.score = roomInfo[i].score;
+        send(clientSocket, &result, sizeof(result), 0);
     }
 }
 
 void Server::handleViewStatusRoom(int clientSocket)
 {
-    std::vector<Room> roomInfo;
+    std::vector<Total_room> roomInfo;
     DbSqlite::getInstance()->get_room_info(roomInfo);
     int _size = roomInfo.size();
     send(clientSocket, &_size, sizeof(_size), 0);
 
     for (size_t i = 0; i < roomInfo.size(); i++)
     {
-        Room room = roomInfo[i];
+        Total_room room = roomInfo[i];
         send(clientSocket, &room, sizeof(room), 0);
     }
 }
@@ -472,3 +467,32 @@ void Server::handleViewStatusRoom(int clientSocket)
 void Server::handleLogout(int clientSocket)
 {
 }
+
+// void Server::handleCreateNewRoom(int clientSocket)
+// {
+//     char newRoom[100];
+//     memset(newRoom, 0, sizeof(newRoom));
+//     recv(clientSocket, &newRoom, sizeof(newRoom), 0);
+//     DbSqlite::getInstance()->creat_room_info(newRoom);
+
+//     Room_info roominfo;
+//     std::cout << __LINE__ << std::endl;
+//     // int timeDuration;
+//     if (recv(clientSocket, &roominfo, sizeof(roominfo), 0) == -1)
+//     {
+//         std::cerr << "Error recieving data to the server\n";
+//         close(clientSocket);
+//         close(serverSocket);
+//     }
+//     // else
+//     // {
+//     //     // close(clientSocket);
+//     // }
+//     // close(serverSocket);
+
+//     std::cout << roominfo.numberQuestion << " "
+//               << roominfo.easy << " " << roominfo.topic << "\n";
+//     // std::cout << timeDuration << std::endl;
+
+//     DbSqlite::getInstance()->insert_room_info(newRoom, roominfo);
+// }

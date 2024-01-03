@@ -58,7 +58,8 @@ DbSqlite::DbSqlite()
     tableCreateQuery.clear();
     tableCreateQuery.push_back(CREATE_USER_TABLE_SQL);
     tableCreateQuery.push_back(CREATE_USER_QUESTION_SQL);
-    tableCreateQuery.push_back(CREATE_ROOM_TABLE_SQL);
+    tableCreateQuery.push_back(CREATE_TABLE_TOTAL_ROOM);
+    tableCreateQuery.push_back(CREATE_INFO_ROOM);
 
     db_ready = create_db();
     // Question questions;
@@ -240,6 +241,38 @@ bool DbSqlite::insert_user_data(User &userinfor)
     }
     return false;
 }
+bool DbSqlite::insert_total_room(std::string roomName)
+{
+    int ret;
+    std::cout << __LINE__ << "\n";
+    if (db_ready)
+    {
+        std::cout << __LINE__ << "\n";
+        char sql[MAX_SIZE];
+        memset(sql, 0, MAX_SIZE);
+        char *zErrMsg = 0;
+
+        // const int ID_USER = 1;
+        snprintf(sql, MAX_SIZE, INSERT_TOTAL_ROOM, roomName);
+        ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+        std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+
+        if (ret != SQLITE_OK)
+        {
+            char temp[1000] = {0};
+            memset(temp, 0, 1000);
+            // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__,
+            //  __PRETTY_FUNCTION__, ret, zErrMsg);
+
+            // printf("Insert_To_Data_Base sql = %s\n", sql);
+            fprintf(stderr, "SQL user insert total room error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
 bool DbSqlite::insert_question_data(Question &question)
 {
     int ret;
@@ -268,15 +301,15 @@ bool DbSqlite::insert_question_data(Question &question)
             // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__,
             // __PRETTY_FUNCTION__, ret, zErrMsg);
             // printf("Insert_To_Data_Base sql = %s\n", sql);
-            fprintf(stderr, "SQL user insert error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL insert_question_data error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
             return false;
         }
     }
     return true;
 }
-
-bool DbSqlite::insert_room_data(Room &room)
+/* return 0 == OK, return 1 == no insert , return 2 == nameroom existed*/
+int DbSqlite::insert_room_data(Total_room &room)
 {
     std::cout << __LINE__ << __FUNCTION__ << std::endl;
 
@@ -291,38 +324,38 @@ bool DbSqlite::insert_room_data(Room &room)
         // std::cout << __LINE__ << std::endl;
         // std::cout << room.name << " " << room.timeDuration << " " << room.numberQuestion << ""
         //           << room.status << " " << room.score << " " << room.user;
-        snprintf(sql, MAX_SIZE, INSERT_ROOM,
-                 room.name,
+        snprintf(sql, MAX_SIZE, INSERT_TOTAL_ROOM,
                  room.status,
                  room.timeDuration,
-                 room.numberQuestion,
-                 room.user,
-                 room.score,
                  room.easy,
                  room.normal,
                  room.difficult,
                  room.veryhard,
-                 room.topic);
+                 room.topic,
+                 room.name);
         std::cout << __LINE__ << sql << std::endl;
 
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
         std::cout << __LINE__ << std::endl;
 
-        if (ret != SQLITE_OK)
+        if (ret == SQLITE_CONSTRAINT)
+        {
+            return ret = 2;
+        }
+        else if (ret != SQLITE_OK)
         {
             char temp[1000] = {0};
             memset(temp, 0, 1000);
             // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__,
             //  __PRETTY_FUNCTION__, ret, zErrMsg);
             // printf("Insert_To_Data_Base sql = %s\n", sql);
-            fprintf(stderr, "SQL user insert error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL user insert total room error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
-            return false;
+            return 1;
         }
     }
-    return true;
+    return 0;
 }
-
 int DbSqlite::search_id_user(User &user)
 {
     if (db_ready)
@@ -420,7 +453,7 @@ bool DbSqlite::get_question_info(std::vector<Question> &question)
     return false;
 }
 
-bool DbSqlite::get_room_info(std::vector<Room> &room)
+bool DbSqlite::get_room_info(std::vector<Total_room> &room)
 {
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
@@ -431,36 +464,29 @@ bool DbSqlite::get_room_info(std::vector<Room> &room)
         int ret = sqlite3_prepare_v2(db, SELECT_TABLE_ROOM, -1, &stmt, NULL);
         if (ret != SQLITE_OK)
         {
-            fprintf(stderr, "Get data from QUESTIONS error: %s\n");
+            fprintf(stderr, "Get data from get_room_info error: %s\n");
             sqlite3_free(stmt);
             return false;
         }
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            Room roominfo;
-            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+            Total_room roominfo;
             roominfo.id = sqlite3_column_int(stmt, 0);
-            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+            roominfo.status = sqlite3_column_int(stmt, 1);
+            roominfo.timeDuration = sqlite3_column_int(stmt, 2);
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 8)));
             strncpy(roominfo.name, tmp, 99);
             roominfo.name[99] = '\0';
-
-            roominfo.status = sqlite3_column_int(stmt, 2);
-            roominfo.timeDuration = sqlite3_column_int(stmt, 3);
-            roominfo.numberQuestion = sqlite3_column_int(stmt, 4);
-
-            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 5)));
-            strncpy(roominfo.user, tmp, 99);
-            roominfo.user[99] = '\0';
-
-            roominfo.score = sqlite3_column_int(stmt, 6);
-            roominfo.easy = sqlite3_column_int(stmt, 7);
-            roominfo.normal = sqlite3_column_int(stmt, 8);
-            roominfo.difficult = sqlite3_column_int(stmt, 9);
-            roominfo.veryhard = sqlite3_column_int(stmt, 10);
+            roominfo.easy = sqlite3_column_int(stmt, 3);
+            roominfo.normal = sqlite3_column_int(stmt, 4);
+            roominfo.difficult = sqlite3_column_int(stmt, 5);
+            roominfo.veryhard = sqlite3_column_int(stmt, 6);
             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
-            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 11)));
+            tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 7)));
             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
             if (tmp != nullptr)
             {
@@ -487,6 +513,192 @@ bool DbSqlite::get_room_info(std::vector<Room> &room)
 
     return false;
 }
+
+bool DbSqlite::get_info_inforoom(std::vector<Room_info> &room)
+{
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+    if (db_ready)
+    {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        sqlite3_stmt *stmt;
+        int ret = sqlite3_prepare_v2(db, SELECT_ALL_INFOROOM, -1, &stmt, NULL);
+        if (ret != SQLITE_OK)
+        {
+            fprintf(stderr, "Get data from QUESTIONS error: %s\n");
+            sqlite3_free(stmt);
+            return false;
+        }
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            Room_info roominfo;
+            roominfo.id = sqlite3_column_int(stmt, 0);
+            roominfo.id_totalroom = sqlite3_column_int(stmt, 1);
+
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
+            strncpy(roominfo.user, tmp, 99);
+            roominfo.user[99] = '\0';
+            roominfo.score = sqlite3_column_int(stmt, 1);
+
+            room.push_back(roominfo);
+        }
+        sqlite3_free(stmt);
+
+        return true;
+    }
+
+    return false;
+}
+
+std::string DbSqlite::get_namemroom_from_id(int id)
+{
+    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+    if (db_ready)
+    {
+        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        sqlite3_stmt *stmt;
+        char sql[MAX_SIZE];
+        memset(sql, 0, MAX_SIZE);
+        snprintf(sql, MAX_SIZE, SELECT_NAME_ROOM_FROM_ID,
+                 id);
+        int ret = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+        if (ret != SQLITE_OK)
+        {
+            fprintf(stderr, "Get data from inforoom with id error: %s\n");
+            sqlite3_free(stmt);
+            return "";
+        }
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 8)));
+            std::string ret(tmp);
+            return ret;
+        }
+        sqlite3_free(stmt);
+
+        return "";
+    }
+
+    return "";
+}
+// bool DbSqlite::get_struct_totalroom(std::vector<Total_room> &totalroom)
+// {
+//     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+//     if (db_ready)
+//     {
+//         std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+//         sqlite3_stmt *stmt;
+//         int ret = sqlite3_prepare_v2(db, SELECT_ALL_ROOM, -1, &stmt, NULL);
+//         if (ret != SQLITE_OK)
+//         {
+//             fprintf(stderr, "Get data from QUESTIONS error: %s\n");
+//             sqlite3_free(stmt);
+//             return false;
+//         }
+
+//         while (sqlite3_step(stmt) == SQLITE_ROW)
+//         {
+//             Total_room roominfo;
+//             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+//             roominfo.id = sqlite3_column_int(stmt, 0);
+//             char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 1)));
+//             strncpy(roominfo.roomName, tmp, 99);
+//             roominfo.roomName[99] = '\0';
+//             if (tmp != nullptr)
+//             {
+//                 strncpy(roominfo.roomName, tmp, 99);
+//                 roominfo.roomName[99] = '\0';
+//             }
+//             else
+//             {
+//                 return false;
+//             }
+//             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+//             // delete tmp;
+//             totalroom.push_back(roominfo);
+//         }
+//         sqlite3_free(stmt);
+
+//         return true;
+//     }
+
+//     return false;
+// }
+
+// bool DbSqlite::get_struct_info_room(std::string nameRoom, std::vector<Room_info> &room)
+// {
+//     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+//     if (db_ready)
+//     {
+//         std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+//         sqlite3_stmt *stmt;
+//         char sql[MAX_SIZE];
+//         memset(sql, 0, MAX_SIZE);
+//         snprintf(sql, MAX_SIZE, SELECT_INFO_ROOM,
+//                 nameRoom.c_str() );
+//         int ret = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+//         if (ret != SQLITE_OK)
+//         {
+//             fprintf(stderr, "Get data from QUESTIONS error: %s\n");
+//             sqlite3_free(stmt);
+//             return false;
+//         }
+
+//         while (sqlite3_step(stmt) == SQLITE_ROW)
+//         {
+//            Room_info roominfo;
+//             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+//             roominfo.id = sqlite3_column_int(stmt, 0);
+//             roominfo.id_totalroom = sqlite3_column_int(stmt, 1);
+//             roominfo.status = sqlite3_column_int(stmt, 2);
+//             roominfo.timeDuration = sqlite3_column_int(stmt, 3);
+//             roominfo.numberQuestion = sqlite3_column_int(stmt, 4);
+
+//             char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 5)));
+//             strncpy(roominfo.user, tmp, 99);
+//             roominfo.user[99] = '\0';
+
+//             roominfo.score = sqlite3_column_int(stmt, 6);
+
+//             roominfo.easy = sqlite3_column_int(stmt, 7);
+//             roominfo.normal = sqlite3_column_int(stmt, 8);
+//             roominfo.difficult = sqlite3_column_int(stmt, 9);
+//             roominfo.veryhard = sqlite3_column_int(stmt, 10);
+
+//             tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 11)));
+//             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+//             if (tmp != nullptr)
+//             {
+//                 strncpy(roominfo.topic, tmp, 99);
+//                 roominfo.topic[99] = '\0';
+//             }
+//             else
+//             {
+//                 return false;
+//             }
+//             std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+
+//             std::cout << "|roominfo. name: " << nameRoom
+//                       << "; "
+//                       << "|roominfo.status: " << roominfo.status << std::endl;
+
+//             // delete tmp;
+//             room.push_back(roominfo);
+//         }
+//         sqlite3_free(stmt);
+
+//         return true;
+//     }
+
+//     return false;
+// }
+
 bool DbSqlite::update_status_room(std::string nameRoom)
 {
     int ret;
@@ -564,7 +776,80 @@ bool DbSqlite::get_timeDuration(std::string nameRoom, int &timeDuration)
     }
     return false;
 }
-bool DbSqlite::update_timeDuration(Room &room)
+
+// int DbSqlite::get_id_from_totalroom(std::string nameRoom)
+// {
+//     if (db_ready)
+//     {
+//         sqlite3_stmt *stmt;
+//         int ret = sqlite3_prepare_v2(db, SELECT_ID_TOTAL_ROOM, -1, &stmt, NULL);
+
+//         if (ret != SQLITE_OK)
+//         {
+//             fprintf(stderr, "Get ID FROM TOTALROOM error: %s\n");
+//             sqlite3_free(stmt);
+//             return false;
+//         }
+
+//         if (ret == SQLITE_ROW)
+//         {
+//             int roomId = sqlite3_column_int(stmt, 0);
+//             sqlite3_finalize(stmt);
+//             sqlite3_close(db);
+//             return roomId;
+//         }
+//         else if (ret == SQLITE_DONE)
+//         {
+//             // Không có dòng nào khớp với điều kiện WHERE
+//             return 0;
+//             std::cout << "Room not found." << std::endl;
+//         }
+//         else
+//         {
+//             // Có lỗi xảy ra
+//             std::cerr << "Error executing query: " << sqlite3_errmsg(db) << std::endl;
+//         }
+//         return 2;
+//     }
+//     return 0;
+// }
+
+int DbSqlite::get_id_total_room(std::string nameRoom)
+{
+    if (db_ready)
+    {
+        sqlite3_stmt *stmt;
+        char sql[MAX_SIZE];
+        memset(sql, 0, MAX_SIZE);
+        sprintf(sql, SELECT_ID_TOTAL_ROOM,
+                nameRoom.c_str());
+
+        // Check if path exists in database
+        int ret = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+
+        if (ret != SQLITE_OK)
+        {
+            std::cerr << "Error search_event_priority: " << sqlite3_errmsg(db) << std::endl;
+            sqlite3_finalize(stmt);
+            return 0;
+        }
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            // imgPath exists in database, return true
+            int id = sqlite3_column_int(stmt, 0);
+            sqlite3_finalize(stmt);
+            return id;
+        }
+        if (sqlite3_step(stmt) == SQLITE_DONE)
+        {
+            ret = 0;
+            return ret;
+        }
+    }
+    return 0;
+}
+
+bool DbSqlite::update_timeDuration(Total_room &room)
 {
     int ret;
     if (db_ready)
@@ -591,6 +876,41 @@ bool DbSqlite::update_timeDuration(Room &room)
     }
     return true;
 }
+
+bool DbSqlite::insert_userscore_inforoom(int id, std::string user, int score)
+{
+    int ret;
+    if (db_ready)
+    {
+        char sql[MAX_SIZE];
+        memset(sql, 0, MAX_SIZE);
+        char *zErrMsg = 0;
+
+        // const int ID_USER = 1;
+        snprintf(sql, MAX_SIZE, INSERT_USER_INTO_INFOROOM,
+                 id,
+                 user.c_str(),
+                 score);
+        ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+        if (ret == SQLITE_CONSTRAINT)
+        {
+            std::cout << "id room is not exist\n";
+            return false;
+        }
+        else if (ret != SQLITE_OK)
+        {
+            char temp[1000] = {0};
+            memset(temp, 0, 1000);
+            sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__, __PRETTY_FUNCTION__, ret, zErrMsg);
+            // printf("Insert_To_Data_Base sql = %s\n", sql);
+            fprintf(stderr, "SQL user update time duraiton error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+            return false;
+        }
+    }
+    return true;
+}
+
 bool DbSqlite::get_user_info(std::vector<User> &user)
 {
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
@@ -670,3 +990,77 @@ bool DbSqlite::set_score_room(int score, std::string nameRoom)
     }
     return true;
 }
+
+bool DbSqlite::creat_room_info(char roomName[100])
+{
+    sqlite3 *db;
+    int rc = sqlite3_open(DB_FILE_NAME, &db);
+    if (rc)
+    {
+        std::cerr << "Cannot open database: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+    char sql[MAX_SIZE];
+    memset(sql, 0, MAX_SIZE);
+    char *zErrMsg = 0;
+    snprintf(sql, MAX_SIZE, CREATE_INFO_ROOM,
+             roomName);
+    rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "Cannot create room info table: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return false;
+    }
+    sqlite3_close(db);
+
+    std::cout << "Tables created successfully." << std::endl;
+
+    return true;
+}
+// bool DbSqlite::insert_room_info(char nameRoom[100] , Room_info room)
+// {
+//     std::cout << __LINE__ << __FUNCTION__ << std::endl;
+
+//     int ret;
+//     if (db_ready)
+//     {
+//         char sql[MAX_SIZE];
+//         memset(sql, 0, MAX_SIZE);
+//         char *zErrMsg = 0;
+
+//         // const int ID_USER = 1;
+//         // std::cout << __LINE__ << std::endl;
+//         // std::cout << room.name << " " << room.timeDuration << " " << room.numberQuestion << ""
+//         //           << room.status << " " << room.score << " " << room.user;
+//         snprintf(sql, MAX_SIZE, INSERT_ROOM,
+//                  nameRoom,
+//                  room.status,
+//                  room.timeDuration,
+//                  room.numberQuestion,
+//                  room.user,
+//                  room.score,
+//                  room.easy,
+//                  room.normal,
+//                  room.difficult,
+//                  room.veryhard,
+//                  room.topic);
+//         std::cout << __LINE__ << sql << std::endl;
+
+//         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+//         std::cout << __LINE__ << std::endl;
+
+//         if (ret != SQLITE_OK)
+//         {
+//             char temp[1000] = {0};
+//             memset(temp, 0, 1000);
+//             // sprintf(temp, "[DB %d %s] ret: %d | err_msg: %s\n", __LINE__,
+//             //  __PRETTY_FUNCTION__, ret, zErrMsg);
+//             // printf("Insert_To_Data_Base sql = %s\n", sql);
+//             fprintf(stderr, "SQL user insert roominfo error: %s\n", zErrMsg);
+//             sqlite3_free(zErrMsg);
+//             return false;
+//         }
+//     }
+//     return true;
+// }

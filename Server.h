@@ -22,7 +22,7 @@ public:
     void handleViewRusultRoom(int clientSocket);
     void handleTrainningMode(int clientSocket);
     void handleJoinRoom(int clientSocket);
-    void handleStartExam(int clientSocket, Room room);
+    void handleStartExam(int clientSocket,  int id_room, std::string user);
     void handleViewStatusRoom(int clientSocket);
     void handleLogout(int clientSocket);
     void closeConnected()

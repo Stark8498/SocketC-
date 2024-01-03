@@ -25,7 +25,8 @@
 #include <regex>
 
 /*0 -- easy, 1-- normal, 2-- difficult, 3-- veryhard*/
-struct Question {
+struct Question
+{
     int id;
     char content[100];
     char choices1[100];
@@ -37,7 +38,37 @@ struct Question {
     int level;
 };
 
-struct User {
+struct Room_result
+{
+    char name[100];
+    char user[100];
+    int score;
+};
+
+
+struct Total_room
+{
+    int id;
+    char name[100];
+    int status;
+    int timeDuration;
+    int easy;
+    int normal;
+    int difficult;
+    int veryhard;
+    char topic[100];
+};
+
+struct Room_info
+{
+    int id;
+    int id_totalroom;
+    char user[100];
+    int score;
+};
+
+struct User
+{
     int id;
     char username[100];
     char password[100];
@@ -48,7 +79,7 @@ struct Room
 {
     int id;
     char name[100];
-    int status ;
+    int status;
     int timeDuration;
     int numberQuestion;
     char user[100];
@@ -64,8 +95,7 @@ struct Room
 #define MAX_SIZE 1000
 #define DB_FILE_NAME "user.db"
 
-
-#define PORT      8001
+#define PORT 8000
 
 #define LOGIN "login"
 #define REGISTER "register"
@@ -78,11 +108,9 @@ struct Room
 #define START_EXAM "start_exam"
 #define SUBMIT_EXAM "submit_exam"
 #define TRAINING_MODE "training_mode"
-#define RETURN_MAIN_MENU "return_main" 
+#define RETURN_MAIN_MENU "return_main"
 #define LOGOUT "logout"
 #define NUMBER_QUESTION_TRAINING_MODE 10
-#define TIME_FOR_EACH_QUESTION  2
-
-
+#define TIME_FOR_EACH_QUESTION 2
 
 #endif // MY_HEADER_FILE_H
