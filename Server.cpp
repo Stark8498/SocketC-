@@ -2,6 +2,10 @@
 #include "Server.h"
 #include "DbSqlite.h"
 
+/**
+ * The Server constructor creates a socket, binds it to a specific address and port, and starts
+ * listening for incoming connections.
+ */
 Server::Server() : isConnected(true), isAdmin(false)
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -126,6 +130,13 @@ void Server::start()
     }
 }
 
+/**
+ * The function `handleLogin` receives a username and password from a client, checks if the credentials
+ * are valid, and sends a success or error message back to the client.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor for the client connection.
+ * It is used to send and receive data between the server and the client.
+ */
 void Server::handleLogin(int clientSocket)
 {
     std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
@@ -168,6 +179,17 @@ void Server::handleLogin(int clientSocket)
     }
 }
 
+/**
+ * The function `handleRegistration` receives a new username and password from a client, checks if the
+ * username already exists in the database, and either registers the user or sends an error message
+ * back to the client.
+ * 
+ * @param clientSocket The parameter `clientSocket` is the socket descriptor for the client connection.
+ * It is used to send and receive data between the server and the client.
+ * 
+ * @return In this code snippet, the function does not have a return type specified. Therefore, it does
+ * not explicitly return any value.
+ */
 void Server::handleRegistration(int clientSocket)
 {
     std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
@@ -218,6 +240,13 @@ void Server::handleRegistration(int clientSocket)
     }
 }
 
+/**
+ * The function `handleCreateExamRoom` receives data from a client socket, inserts room information
+ * into a database, and inserts a set of questions into the database based on the room information.
+ * 
+ * @param clientSocket The `clientSocket` parameter is the socket descriptor for the client connection.
+ * It is used to receive data from the client and send responses back to the client.
+ */
 void Server::handleCreateExamRoom(int clientSocket)
 {
     std::cout << "|Insight Create Room\n";
@@ -353,6 +382,16 @@ void Server::handleSetNumberOfQuestions(int clientSocket)
     send(clientSocket, responseMessage, strlen(responseMessage), 0);
 }
 
+/**
+ * The function `handleSetExamDuration` handles the request to set the exam duration by sending the
+ * room information to the client and updating the time duration in the database.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor for the client connection.
+ * It is used to send and receive data between the server and the client.
+ * 
+ * @return In this code snippet, nothing is being explicitly returned. The function has a void return
+ * type, which means it does not return any value.
+ */
 void Server::handleSetExamDuration(int clientSocket)
 {
     std::cout << "|insight handle set exem duration\n";
@@ -402,6 +441,16 @@ void Server::handleTrainningMode(int clientSocket)
 
     // DbSqlite::getInstance()->get();
 }
+/**
+ * The function `handleJoinRoom` handles the process of a client joining a room in a server
+ * application.
+ * 
+ * @param clientSocket The parameter `clientSocket` is the socket descriptor for the client connection.
+ * It is used to send and receive data between the server and the client.
+ * 
+ * @return The function does not have a return type specified, so it does not explicitly return
+ * anything.
+ */
 void Server::handleJoinRoom(int clientSocket)
 {
     std::vector<Total_room> roomInfo;
@@ -459,6 +508,16 @@ void Server::handleJoinRoom(int clientSocket)
         return;
     }
 }
+/**
+ * The function `handleStartExam` in the `Server` class sends a list of questions to a client, receives
+ * the client's score, and inserts the score into a database.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor for the client connection.
+ * It is used to send and receive data between the server and the client.
+ * @param id_room The `id_room` parameter represents the ID of the room where the exam is taking place.
+ * @param user The "user" parameter in the "handleStartExam" function is a string that represents the
+ * username of the client who initiated the exam.
+ */
 void Server::handleStartExam(int clientSocket, int id_room, std::string user)
 {
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
@@ -487,6 +546,20 @@ void Server::handleStartExam(int clientSocket, int id_room, std::string user)
     recv(clientSocket, &score, sizeof(score), 0);
     DbSqlite::getInstance()->insert_userscore_inforoom(id_room, user, score);
 }
+/**
+ * The function `handleViewResultRoom` retrieves information about rooms from a database and sends it
+ * to a client socket.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor of the client that is
+ * connected to the server. It is used to send data back to the client.
+ */
+/**
+ * The function `handleViewResultRoom` retrieves information about rooms from a database and sends it
+ * to a client socket.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor of the client that is
+ * connected to the server. It is used to send data back to the client.
+ */
 void Server::handleViewRusultRoom(int clientSocket)
 {
     std::vector<Room_info> roomInfo;
@@ -504,6 +577,13 @@ void Server::handleViewRusultRoom(int clientSocket)
     }
 }
 
+/**
+ * The function `handleViewStatusRoom` in the `Server` class sends the information of all rooms to a
+ * client socket.
+ * 
+ * @param clientSocket The clientSocket parameter is the socket descriptor for the client connection.
+ * It is used to send data back to the client.
+ */
 void Server::handleViewStatusRoom(int clientSocket)
 {
     std::vector<Total_room> roomInfo;
