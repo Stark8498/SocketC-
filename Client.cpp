@@ -1,3 +1,4 @@
+#include "set"
 #include "Client.h"
 
 // function
@@ -25,8 +26,10 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     srand(time(0));
 
     // Question questions[5];
-    // std::cout << "Start Question Test"
-    //           << "|numberQuestion: " << numberQuestion << "|timeDuration: " << timeDuration << std::endl;
+    std::cout << "Start Question Test"
+              << "|numberQuestion: " << numberQuestion
+              << "|question SIZE: " << question.size()
+              << "|timeDuration: " << timeDuration << std::endl;
     correctAnswers = 0;
     time_t startTime = time(0);
     time_t elapsedTime;
@@ -44,12 +47,13 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     }
     while (true)
     {
+
         // if (i > numberQuestion)
         // {
         //     break;
         // }
 
-        // // std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+        std::cout << __LINE__ << "i: " << i << __FUNCTION__ << "\n";
 
         elapsedTime = time(0) - startTime;
         if (elapsedTime >= timeDuration)
@@ -73,7 +77,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
             {
                 // std::cout << "[LINE]" << __LINE__ << "[FUNC]" << __FUNCTION__ << "|correctAnswers: " << correctAnswers << std::endl;
 
-                std::cout << "End Time ! END TEST" << std::endl;
+                std::cout << __LINE__ << "End Time ! END TEST" << std::endl;
                 return;
             }
         }
@@ -917,18 +921,7 @@ void Client::joinRoom()
                 send(clientSocket, &choice, sizeof(choice), 0);
                 if (choice == 1)
                 {
-                    send(clientSocket, &choice, sizeof(choice), 0);
                     std::string topic(alreadyRoom[i].topic);
-                    //     // char buffStr[1024];
-                    //     // memset(buffStr, 0, sizeof(buffStr));
-                    //     // recv(clientSocket, &buffStr, sizeof(buffStr), 0);
-                    //     int size_p;
-                    //     recv(clientSocket, &size_p, sizeof(size_p), 0);
-                    //     int size_s = 2  ;
-                    //     recv(clientSocket, &size_s, sizeof(size_s), 0);
-
-                    //     std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_s << "|topic:" << topic << std::endl;
-
                     startExam(joinRoom, numberQuestion, timeDuratiron, topic, alreadyRoom[i].easy,
                               alreadyRoom[i].normal, alreadyRoom[i].difficult, alreadyRoom[i].veryhard);
                     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
@@ -959,8 +952,16 @@ void Client::joinRoom()
         std::cout << "No room available\n";
     }
 }
-void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuration, std::string topic, int easy, int normal, int difficult, int veryhard)
+void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuration,
+                       std::string topic, int easy, int normal, int difficult, int veryhard)
 {
+    std::cout << __LINE__ << " : " << __FUNCTION__
+              << "|easy: " << easy
+              << "|normal:" << normal
+              << "|difficult:" << difficult
+              << "|veryhard:" << veryhard
+              << std::endl;
+
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
     std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << _size << "|topic:" << topic << std::endl;
@@ -973,7 +974,7 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
     int count = 0;
     for (int i = 0; i < 10; ++i)
     {
-        count++;
+
         Question ques;
         recv(clientSocket, &ques, sizeof(ques), 0);
         // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << _size << std::endl;
@@ -1001,12 +1002,14 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
                 question.push_back(ques);
                 veryhard_count++;
             }
+            count++;
         }
     }
     // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << question.size()
     //           << "|timdur: " << timeDuration << "|Numberquestion: " << numberQuestion << std::endl;
     std::cout << __LINE__ << " : " << __FUNCTION__
-              << "|count: " << count << std::endl;
+              << "|count: " << count
+              << "|Size of question: " << question.size() << std::endl;
 
     numberQuestion = easy + normal + difficult + veryhard;
     int correctAnswers = 0;
@@ -1027,7 +1030,7 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
 void Client::viewStatusRoom()
 {
     int size_vec;
-    std::vector<Room> roomInfo;
+    std::vector<Total_room> roomInfo;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
     // std::cout << __LINE__ <<" : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
 
@@ -1035,7 +1038,7 @@ void Client::viewStatusRoom()
     {
         // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
-        Room room;
+        Total_room room;
         recv(clientSocket, &room, sizeof(room), 0);
         roomInfo.push_back(room);
     }
@@ -1097,24 +1100,66 @@ void Client::resultRoom()
 }
 void Client::trainingMode()
 {
+    std::set<std::string> set_topic;
     int correctAnswer;
     outfile << "Welcome training Mode \n";
     std::cout << "Welcome training Mode \n";
+    std::string topic_p;
     int size_vec;
     std::vector<Question> question;
     recv(clientSocket, &size_vec, sizeof(size_vec), 0);
     // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << size_vec << std::endl;
-
+    std::cout << "\nList topic: \n";
     for (int i = 0; i < size_vec; i++)
     {
         // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         Question ques;
         recv(clientSocket, &ques, sizeof(ques), 0);
+        std::string strTopic(ques.topic);
+        set_topic.insert(strTopic);
         question.push_back(ques);
     }
+    std::set<std::string>::iterator it;
+    for (it = set_topic.begin(); it != set_topic.end(); it++)
+    {
+        std::cout << *it;
+        std::cout << "\n============\n";
+    }
 
-    showTest(question, NUMBER_QUESTION_TRAINING_MODE * TIME_FOR_EACH_QUESTION, NUMBER_QUESTION_TRAINING_MODE, correctAnswer, true);
+    std::cout << "\nChoice Topic: \n";
+    bool ret = false;
+    std::vector<Question> traningQuesvec;
+    while (true)
+    {
+        if (ret)
+        {
+            break;
+        }
+        else
+        {
+            std::cin >> topic_p;
+            for (int i = 0; i < question.size(); i++)
+            {
+                if (strcmp(question[i].topic, topic_p.c_str()) == 0)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+            std::cout << "Please enter topic again\n";
+        }
+    }
+
+    for (int i = 0; i < question.size(); i++)
+    {
+        if (strcmp(question[i].topic, topic_p.c_str()) == 0)
+        {
+            traningQuesvec.push_back(question[i]);
+        }
+    }
+
+    showTest(traningQuesvec, NUMBER_QUESTION_TRAINING_MODE * TIME_FOR_EACH_QUESTION, NUMBER_QUESTION_TRAINING_MODE, correctAnswer, true);
     std::cout << "Number of correct answers: " << correctAnswer << "/" << NUMBER_QUESTION_TRAINING_MODE << std::endl;
     int score = ((float)correctAnswer / NUMBER_QUESTION_TRAINING_MODE) * 10;
     std::cout << "Your score: " << score << std::endl;

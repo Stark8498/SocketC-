@@ -145,10 +145,9 @@ void Server::handleLogin(int clientSocket)
     std::cout << "| user.username: " << user.username << "\n";
     strncpy(user.password, password.c_str(), sizeof(user.password));
     std::cout << "| user.password: " << user.password << "\n";
-    if (!(strcmp(user.username, "admin") && strcmp(user.password, "admin")))
+    if (!(strcmp(user.username, "admin")) && !(strcmp(user.password, "admin")))
     {
         std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
-
         isAdmin = true;
         const char *successMessage = "Ok";
         send(clientSocket, successMessage, strlen(successMessage), 0);
@@ -243,42 +242,98 @@ void Server::handleCreateExamRoom(int clientSocket)
     int numberQuestion = roominfo.easy + roominfo.normal + roominfo.difficult + roominfo.veryhard;
     DbSqlite::getInstance()->insert_room_data(roominfo);
     Question questions;
-    for (int i = 1; i <= numberQuestion * 2; ++i)
+    for (int i = 1; i < 100; ++i)
     {
-        std::string question = "Question " + std::to_string(i);
-        strncpy(questions.content, question.c_str(), sizeof(questions.content));
-        std::string answerA = "Option A for Question " + std::to_string(i);
-        strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+        // std::string question = "Question " + std::to_string(i);
+        // strncpy(questions.content, question.c_str(), sizeof(questions.content));
+        // std::string answerA = "Option A for Question " + std::to_string(i);
+        // strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-        std::string answerB = "Option B for Question " + std::to_string(i);
-        strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+        // std::string answerB = "Option B for Question " + std::to_string(i);
+        // strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-        std::string answerC = "Option C for Question " + std::to_string(i);
-        strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+        // std::string answerC = "Option C for Question " + std::to_string(i);
+        // strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-        std::string answerD = "Option D for Question " + std::to_string(i);
-        strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+        // std::string answerD = "Option D for Question " + std::to_string(i);
+        // strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
         std::string correctAnswer;
         std::string topic;
         topic = roominfo.topic;
         int level;
-        if (i < roominfo.easy * 2)
+        if (i < 20)
         {
+            std::string str = "easy";
+            std::string question = "Question " + str + std::to_string(i);
+            strncpy(questions.content, question.c_str(), sizeof(questions.content));
+            std::string answerA = "Option A for Question " + std::to_string(i);
+            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+            std::string answerB = "Option B for Question " + std::to_string(i);
+            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+            std::string answerC = "Option C for Question " + std::to_string(i);
+            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+            std::string answerD = "Option D for Question " + std::to_string(i);
+            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
             correctAnswer = "A";
             level = 0;
         }
-        else if (i > roominfo.easy * 2 && i < roominfo.normal * 2)
+        else if (i > 20 && i < 40)
         {
+            std::string str = "normal";
+            std::string question = "Question " + str + std::to_string(i);
+            strncpy(questions.content, question.c_str(), sizeof(questions.content));
+            std::string answerA = "Option A for Question " + std::to_string(i);
+            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+            std::string answerB = "Option B for Question " + std::to_string(i);
+            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+            std::string answerC = "Option C for Question " + std::to_string(i);
+            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+            std::string answerD = "Option D for Question " + std::to_string(i);
+            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
             correctAnswer = "A";
             level = 1;
         }
-        else if (i > roominfo.normal * 2 && i < roominfo.difficult * 2)
+        else if (i > 40 && i < 60)
         {
+            std::string str = "difficult";
+            std::string question = "Question " + str + std::to_string(i);
+            strncpy(questions.content, question.c_str(), sizeof(questions.content));
+            std::string answerA = "Option A for Question " + std::to_string(i);
+            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+            std::string answerB = "Option B for Question " + std::to_string(i);
+            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+            std::string answerC = "Option C for Question " + std::to_string(i);
+            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+            std::string answerD = "Option D for Question " + std::to_string(i);
+            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
             correctAnswer = "C";
             level = 2;
         }
         else
         {
+            std::string str = "veryhard";
+            std::string question = "Question " + str + std::to_string(i);
+            strncpy(questions.content, question.c_str(), sizeof(questions.content));
+            std::string answerA = "Option A for Question " + std::to_string(i);
+            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+            std::string answerB = "Option B for Question " + std::to_string(i);
+            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+            std::string answerC = "Option C for Question " + std::to_string(i);
+            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+            std::string answerD = "Option D for Question " + std::to_string(i);
+            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
             correctAnswer = "B";
             level = 3;
         }
@@ -311,7 +366,6 @@ void Server::handleSetExamDuration(int clientSocket)
         Total_room room_p = roomInfo[i];
         send(clientSocket, &room_p, sizeof(room_p), 0);
     }
-    
 
     Total_room room;
     char name[1024];
