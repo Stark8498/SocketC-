@@ -26,10 +26,10 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     srand(time(0));
 
     // Question questions[5];
-    std::cout << "Start Question Test"
-              << "|numberQuestion: " << numberQuestion
-              << "|question SIZE: " << question.size()
-              << "|timeDuration: " << timeDuration << std::endl;
+    // std::cout << "Start Question Test"
+    //           << "|numberQuestion: " << numberQuestion
+    //           << "|question SIZE: " << question.size()
+    //           << "|timeDuration: " << timeDuration << std::endl;
     correctAnswers = 0;
     time_t startTime = time(0);
     time_t elapsedTime;
@@ -53,7 +53,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
         //     break;
         // }
 
-        std::cout << __LINE__ << "i: " << i << __FUNCTION__ << "\n";
+        // std::cout << __LINE__ << "i: " << i << __FUNCTION__ << "\n";
 
         elapsedTime = time(0) - startTime;
         if (elapsedTime >= timeDuration)
@@ -229,13 +229,13 @@ void Client::showSubMenu()
     std::string choice_str;
     while (true)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         switch (isAdmin)
         {
         case true:
         {
-            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+            // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
             while (true)
             {
@@ -262,9 +262,9 @@ void Client::showSubMenu()
                 }
             }
             int choice = std::stoi(choice_str);
-            std::cout << "[LINE] " << __LINE__
-                      << " FUNC: " << __FUNCTION__
-                      << " choice: " << choice << "\n";
+            // std::cout << "[LINE] " << __LINE__
+            //           << " FUNC: " << __FUNCTION__
+            //           << " choice: " << choice << "\n";
             std::string str_choice;
             if (choice == 1)
             {
@@ -300,9 +300,9 @@ void Client::showSubMenu()
             }
             // std::cout << "|str_choice: " << str_choice << "\n";
             // outfile << "|str_choice: " << str_choice << "\n";
-            std::cout << "[LINE] " << __LINE__
-                      << " FUNC: " << __FUNCTION__
-                      << " str_choice: " << str_choice << "\n";
+            // std::cout << "[LINE] " << __LINE__
+            //           << " FUNC: " << __FUNCTION__
+            //           << " str_choice: " << str_choice << "\n";
             if (str_choice.length() != 0)
             {
                 send(clientSocket, str_choice.c_str(), strlen(str_choice.c_str()), 0);
@@ -558,7 +558,7 @@ void Client::setExamDuration()
     std::vector<Total_room> roomInfo;
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
-    std::cout << __LINE__ << "|_size: " << _size << std::endl;
+    // std::cout << __LINE__ << "|_size: " << _size << std::endl;
     for (int i = 0; i < _size; i++)
     {
         Total_room room;
@@ -955,16 +955,16 @@ void Client::joinRoom()
 void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuration,
                        std::string topic, int easy, int normal, int difficult, int veryhard)
 {
-    std::cout << __LINE__ << " : " << __FUNCTION__
-              << "|easy: " << easy
-              << "|normal:" << normal
-              << "|difficult:" << difficult
-              << "|veryhard:" << veryhard
-              << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__
+    //           << "|easy: " << easy
+    //           << "|normal:" << normal
+    //           << "|difficult:" << difficult
+    //           << "|veryhard:" << veryhard
+    //           << std::endl;
 
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << _size << "|topic:" << topic << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << _size << "|topic:" << topic << std::endl;
 
     std::vector<Question> question;
     int easy_count = 0;
@@ -1007,9 +1007,9 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
     }
     // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << question.size()
     //           << "|timdur: " << timeDuration << "|Numberquestion: " << numberQuestion << std::endl;
-    std::cout << __LINE__ << " : " << __FUNCTION__
-              << "|count: " << count
-              << "|Size of question: " << question.size() << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__
+    //           << "|count: " << count
+    //           << "|Size of question: " << question.size() << std::endl;
 
     numberQuestion = easy + normal + difficult + veryhard;
     int correctAnswers = 0;
@@ -1191,127 +1191,3 @@ void Client::Logout()
     isAdmin = false;
     showMenu();
 }
-// void Client::createNewRoom(int clientSocket)
-// {
-//     std::string newRoom;
-//     std::cout << "Enter new room name: ";
-//     std::cin >> newRoom;
-//     send(clientSocket, newRoom.c_str(), strlen(newRoom.c_str()), 0);
-
-//     Room_info roominfo;
-
-//     std::string timerDurationStr;
-//     while (true)
-//     {
-//         std::cout << "Enter time duration: ";
-//         // std::cin >> roominfo.timeDuration;
-//         std::cin >> timerDurationStr;
-//         std::regex pattern("^[0-9]+$");
-//         if (std::regex_match(timerDurationStr, pattern))
-//         {
-//             break;
-//         }
-//         else
-//         {
-//             std::cout << "Invalid choice, Enter choice again !" << std::endl;
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//         }
-//     }
-
-//     roominfo.timeDuration = std::stoi(timerDurationStr);
-
-//     std::cout << "Enter Topic: ";
-//     std::cin >> roominfo.topic;
-
-//     std::string easeStr;
-//     while (true)
-//     {
-//         std::cout << "Enter new number of question  for level easy : ";
-//         // std::cin >> roominfo.timeDuration;
-//         std::cin >> easeStr;
-//         std::regex pattern("^[0-9]+$");
-//         if (std::regex_match(easeStr, pattern))
-//         {
-//             break;
-//         }
-//         else
-//         {
-//             std::cout << "Invalid choice, Enter choice again !" << std::endl;
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//         }
-//     }
-//     roominfo.easy = std::stoi(easeStr);
-//     std::string normalStr;
-//     while (true)
-//     {
-//         std::cout << "Enter new number of question  for level normal : ";
-//         // std::cin >> roominfo.timeDuration;
-//         std::cin >> normalStr;
-//         std::regex pattern("^[0-9]+$");
-//         if (std::regex_match(normalStr, pattern))
-//         {
-//             break;
-//         }
-//         else
-//         {
-//             std::cout << "Invalid choice, Enter choice again !" << std::endl;
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//         }
-//     }
-//     roominfo.normal = std::stoi(normalStr);
-//     std::string difficultStr;
-//     while (true)
-//     {
-//         std::cout << "Enter new number of question  for level difficult : ";
-//         // std::cin >> roominfo.timeDuration;
-//         std::cin >> difficultStr;
-//         std::regex pattern("^[0-9]+$");
-//         if (std::regex_match(difficultStr, pattern))
-//         {
-//             break;
-//         }
-//         else
-//         {
-//             std::cout << "Invalid choice, Enter choice again !" << std::endl;
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//         }
-//     }
-//     roominfo.difficult = std::stoi(difficultStr);
-//     std::string veryhardStr;
-//     while (true)
-//     {
-//         std::cout << "Enter new number of question  for level veryhard : ";
-//         // std::cin >> roominfo.timeDuration;
-//         std::cin >> veryhardStr;
-//         std::regex pattern("^[0-9]+$");
-//         if (std::regex_match(veryhardStr, pattern))
-//         {
-//             break;
-//         }
-//         else
-//         {
-//             std::cout << "Invalid choice, Enter choice again !" << std::endl;
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//         }
-//     }
-//     roominfo.veryhard = std::stoi(veryhardStr);
-
-//     roominfo.numberQuestion = roominfo.easy + roominfo.normal + roominfo.veryhard + roominfo.difficult;
-
-//     roominfo.score = 0;
-//     roominfo.status = 0;
-//     if (send(clientSocket, &roominfo, sizeof(roominfo), 0) == -1)
-//     {
-//         std::cerr << "Error sending data to the server.\n";
-//         close(clientSocket);
-//         return;
-//     }
-//     std::cout << "Create New Room OK";
-//     outfile << "Create New Room OK";
-
-// }
