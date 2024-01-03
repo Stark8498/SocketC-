@@ -28,7 +28,6 @@ public:
     void showSubMenu();
     void disconnect();
     void createExamRoom();
-    void updateEndTime();
     void joinRoom();
     void viewStatusRoom();
     void resultRoom();

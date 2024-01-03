@@ -21,6 +21,22 @@ std::vector<std::string> splitString(const std::string &inputString, char delimi
     return tokens;
 }
 
+/**
+ * The function "showTest" takes in a vector of questions, a time duration, the number of questions to
+ * be answered, a reference to the number of correct answers, and a boolean flag indicating if it is a
+ * training session, and then conducts a test by asking the user questions and checking their answers.
+ * 
+ * @param question A vector of Question objects, representing the questions for the test.
+ * @param timeDuration The time duration for the test in seconds.
+ * @param numberQuestion The parameter "numberQuestion" represents the number of questions to be shown
+ * in the test.
+ * @param correctAnswers A reference to an integer variable that will store the number of correct
+ * answers.
+ * @param isTraining isTraining is a boolean variable that indicates whether the test is a training
+ * test or not.
+ * 
+ * @return The function does not return any value. It is a void function.
+ */
 void Client::showTest(std::vector<Question> question, int timeDuration, int numberQuestion, int &correctAnswers, bool isTraining)
 {
     srand(time(0));
@@ -171,6 +187,16 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     }
 }
 
+/**
+ * The function "askQuestion" prompts the user with a question and multiple choice options, validates
+ * the user's answer, and returns the chosen answer.
+ * 
+ * @param q The parameter `q` is of type `Question`, which is a user-defined class. It contains the
+ * following member variables:
+ * 
+ * @return The function `askQuestion` returns a `std::string` representing the user's answer to the
+ * question.
+ */
 std::string Client::askQuestion(Question q)
 {
     std::string userAnswer;
@@ -197,6 +223,10 @@ std::string Client::askQuestion(Question q)
     return userAnswer;
 }
 
+/**
+ * The above code snippet is the constructor for a Client class in C++, which initializes various
+ * member variables and creates a socket for communication.
+ */
 Client::Client() : isConnected(false), outfile("LOG.txt", std::ios::trunc), isLogin(false), isAdmin(false)
 {
     // std::ofstream outfile("LOG.txt");
@@ -732,6 +762,13 @@ void Client::showMenu()
     }
 }
 
+/**
+ * The above code defines two functions, `login()` and `registerUser()`, for a client to connect to a
+ * server, authenticate the user, and register a new user.
+ * 
+ * @return The functions `login()` and `registerUser()` are both void functions, so they do not return
+ * any value.
+ */
 void Client::login()
 {
     // std::cout << __LINE__ << __FUNCTION__ << std::endl;
@@ -847,6 +884,12 @@ void Client::registerUser()
             << "Server response: " << buffer << std::endl;
 }
 
+/**
+ * The `joinRoom()` function allows a client to join an existing room by selecting a room name and
+ * providing a participant name.
+ * 
+ * @return The function does not have a return type, so it does not return anything.
+ */
 void Client::joinRoom()
 {
     int _size;
@@ -952,15 +995,32 @@ void Client::joinRoom()
         std::cout << "No room available\n";
     }
 }
+/**
+ * The function "startExam" receives questions from a server based on a specified topic and difficulty
+ * levels, displays the questions to the user, calculates the number of correct answers, and sends the
+ * score back to the server.
+ * 
+ * @param joinRoom The parameter `joinRoom` is a string that represents the room that the client is
+ * joining for the exam.
+ * @param numberQuestion The parameter "numberQuestion" represents the total number of questions that
+ * the client wants to answer in the exam.
+ * @param timeDuration The parameter "timeDuration" represents the duration of the exam in minutes.
+ * @param topic The "topic" parameter represents the topic of the exam. It is a string that specifies
+ * the subject or theme of the questions in the exam.
+ * @param easy The "easy" parameter represents the number of easy level questions that the client wants
+ * to receive for the exam.
+ * @param normal The parameter "normal" in the function "startExam" represents the number of questions
+ * of normal difficulty level that the client wants to receive for the exam.
+ * @param difficult The "difficult" parameter represents the number of difficult level questions that
+ * the client wants to include in the exam.
+ * @param veryhard The parameter "veryhard" represents the number of very hard level questions that the
+ * client wants to include in the exam.
+ * 
+ * @return void, which means it is not returning any value.
+ */
 void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuration,
                        std::string topic, int easy, int normal, int difficult, int veryhard)
 {
-    // std::cout << __LINE__ << " : " << __FUNCTION__
-    //           << "|easy: " << easy
-    //           << "|normal:" << normal
-    //           << "|difficult:" << difficult
-    //           << "|veryhard:" << veryhard
-    //           << std::endl;
 
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
@@ -1027,6 +1087,10 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
 
     // DbSqlite::getInstance()->set_score_room(score, joinRoom);
 }
+/**
+ * The function `viewStatusRoom()` receives information about rooms from a client and displays their
+ * status.
+ */
 void Client::viewStatusRoom()
 {
     int size_vec;
@@ -1069,6 +1133,9 @@ void Client::viewStatusRoom()
     }
 }
 
+/**
+ * The function `resultRoom()` receives and displays information about rooms from a client socket.
+ */
 void Client::resultRoom()
 {
     std::cout << "Result of Room: ";
@@ -1098,6 +1165,10 @@ void Client::resultRoom()
                 << roomInfo[i].score << std::endl;
     }
 }
+/**
+ * The function "trainingMode" allows the user to select a topic and answer a set number of questions
+ * related to that topic in a training mode.
+ */
 void Client::trainingMode()
 {
     std::set<std::string> set_topic;

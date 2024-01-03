@@ -160,6 +160,12 @@ DbSqlite *DbSqlite::getInstance()
  *@ Change History :                                                   *
  *@ ********************************************************************
  **/
+/**
+ * The function `create_db` checks if a database file exists, opens the database, and creates tables if
+ * the database does not exist.
+ * 
+ * @return a boolean value.
+ */
 bool DbSqlite::create_db()
 {
     int ret;
@@ -207,6 +213,17 @@ bool DbSqlite::create_db()
     return true;
 }
 
+/**
+ * The function `insert_user_data` inserts user information into a SQLite database and returns true if
+ * successful.
+ * 
+ * @param userinfor The parameter `userinfor` is an object of type `User` that contains the user
+ * information to be inserted into the database. It likely has properties such as `username` and
+ * `password` that are used to construct the SQL query for inserting the user data into the database.
+ * 
+ * @return a boolean value. If the insertion of user data is successful, it returns true. Otherwise, it
+ * returns false.
+ */
 bool DbSqlite::insert_user_data(User &userinfor)
 {
     int ret;
@@ -241,6 +258,15 @@ bool DbSqlite::insert_user_data(User &userinfor)
     }
     return false;
 }
+/**
+ * The function `insert_total_room` inserts a room name into a SQLite database and returns true if
+ * successful.
+ * 
+ * @param roomName The parameter `roomName` is a string that represents the name of the room to be
+ * inserted into the database.
+ * 
+ * @return a boolean value.
+ */
 bool DbSqlite::insert_total_room(std::string roomName)
 {
     int ret;
@@ -273,6 +299,15 @@ bool DbSqlite::insert_total_room(std::string roomName)
     }
     return false;
 }
+/**
+ * The function `insert_question_data` inserts question data into an SQLite database and returns a
+ * boolean indicating whether the operation was successful.
+ * 
+ * @param question The parameter "question" is a reference to an object of type "Question". It contains
+ * the data for a single question, including its content, choices, correct answer, topic, and level.
+ * 
+ * @return a boolean value.
+ */
 bool DbSqlite::insert_question_data(Question &question)
 {
     int ret;
@@ -309,6 +344,18 @@ bool DbSqlite::insert_question_data(Question &question)
     return true;
 }
 /* return 0 == OK, return 1 == no insert , return 2 == nameroom existed*/
+/**
+ * The function `insert_room_data` inserts room data into a SQLite database.
+ * 
+ * @param room The parameter "room" is of type "Total_room", which is a user-defined structure or
+ * class. It contains various attributes such as "name", "timeDuration", "numberQuestion", "status",
+ * "score", and "user". These attributes are used to populate the SQL query for inserting data
+ * 
+ * @return an integer value. The possible return values are:
+ * - 0: If the insertion operation was successful.
+ * - 1: If there was an error during the insertion operation.
+ * - 2: If there was a constraint violation during the insertion operation.
+ */
 int DbSqlite::insert_room_data(Total_room &room)
 {
     std::cout << __LINE__ << __FUNCTION__ << std::endl;
