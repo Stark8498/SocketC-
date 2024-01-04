@@ -163,7 +163,7 @@ DbSqlite *DbSqlite::getInstance()
 /**
  * The function `create_db` checks if a database file exists, opens the database, and creates tables if
  * the database does not exist.
- * 
+ *
  * @return a boolean value.
  */
 bool DbSqlite::create_db()
@@ -216,11 +216,11 @@ bool DbSqlite::create_db()
 /**
  * The function `insert_user_data` inserts user information into a SQLite database and returns true if
  * successful.
- * 
+ *
  * @param userinfor The parameter `userinfor` is an object of type `User` that contains the user
  * information to be inserted into the database. It likely has properties such as `username` and
  * `password` that are used to construct the SQL query for inserting the user data into the database.
- * 
+ *
  * @return a boolean value. If the insertion of user data is successful, it returns true. Otherwise, it
  * returns false.
  */
@@ -261,10 +261,10 @@ bool DbSqlite::insert_user_data(User &userinfor)
 /**
  * The function `insert_total_room` inserts a room name into a SQLite database and returns true if
  * successful.
- * 
+ *
  * @param roomName The parameter `roomName` is a string that represents the name of the room to be
  * inserted into the database.
- * 
+ *
  * @return a boolean value.
  */
 bool DbSqlite::insert_total_room(std::string roomName)
@@ -302,10 +302,10 @@ bool DbSqlite::insert_total_room(std::string roomName)
 /**
  * The function `insert_question_data` inserts question data into an SQLite database and returns a
  * boolean indicating whether the operation was successful.
- * 
+ *
  * @param question The parameter "question" is a reference to an object of type "Question". It contains
  * the data for a single question, including its content, choices, correct answer, topic, and level.
- * 
+ *
  * @return a boolean value.
  */
 bool DbSqlite::insert_question_data(Question &question)
@@ -346,11 +346,11 @@ bool DbSqlite::insert_question_data(Question &question)
 /* return 0 == OK, return 1 == no insert , return 2 == nameroom existed*/
 /**
  * The function `insert_room_data` inserts room data into a SQLite database.
- * 
+ *
  * @param room The parameter "room" is of type "Total_room", which is a user-defined structure or
  * class. It contains various attributes such as "name", "timeDuration", "numberQuestion", "status",
  * "score", and "user". These attributes are used to populate the SQL query for inserting data
- * 
+ *
  * @return an integer value. The possible return values are:
  * - 0: If the insertion operation was successful.
  * - 1: If there was an error during the insertion operation.
@@ -586,7 +586,7 @@ bool DbSqlite::get_info_inforoom(std::vector<Room_info> &room)
             char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 2)));
             strncpy(roominfo.user, tmp, 99);
             roominfo.user[99] = '\0';
-            roominfo.score = sqlite3_column_int(stmt, 1);
+            roominfo.score = sqlite3_column_int(stmt, 3);
 
             room.push_back(roominfo);
         }
@@ -615,21 +615,28 @@ std::string DbSqlite::get_namemroom_from_id(int id)
         {
             fprintf(stderr, "Get data from inforoom with id error: %s\n");
             sqlite3_free(stmt);
-            return "";
+            return " ";
         }
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
             char *tmp = reinterpret_cast<char *>(const_cast<unsigned char *>(sqlite3_column_text(stmt, 8)));
+            if (tmp == nullptr)
+            {
+                sqlite3_finalize(stmt);
+                return " ";
+            }
+
             std::string ret(tmp);
             return ret;
         }
         sqlite3_free(stmt);
 
-        return "";
+        return " ";
     }
 
-    return "";
+    return " ";
 }
 // bool DbSqlite::get_struct_totalroom(std::vector<Total_room> &totalroom)
 // {
@@ -909,6 +916,8 @@ bool DbSqlite::update_timeDuration(Total_room &room)
         snprintf(sql, MAX_SIZE, UPDATE_TIME_DURATION,
                  room.timeDuration,
                  room.name);
+        std::cout << __LINE__ << "|SQL: " << sql << std::endl;
+
         ret = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
         if (ret != SQLITE_OK)
         {

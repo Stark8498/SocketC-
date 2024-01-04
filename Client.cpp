@@ -25,7 +25,7 @@ std::vector<std::string> splitString(const std::string &inputString, char delimi
  * The function "showTest" takes in a vector of questions, a time duration, the number of questions to
  * be answered, a reference to the number of correct answers, and a boolean flag indicating if it is a
  * training session, and then conducts a test by asking the user questions and checking their answers.
- * 
+ *
  * @param question A vector of Question objects, representing the questions for the test.
  * @param timeDuration The time duration for the test in seconds.
  * @param numberQuestion The parameter "numberQuestion" represents the number of questions to be shown
@@ -34,7 +34,7 @@ std::vector<std::string> splitString(const std::string &inputString, char delimi
  * answers.
  * @param isTraining isTraining is a boolean variable that indicates whether the test is a training
  * test or not.
- * 
+ *
  * @return The function does not return any value. It is a void function.
  */
 void Client::showTest(std::vector<Question> question, int timeDuration, int numberQuestion, int &correctAnswers, bool isTraining)
@@ -190,10 +190,10 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
 /**
  * The function "askQuestion" prompts the user with a question and multiple choice options, validates
  * the user's answer, and returns the chosen answer.
- * 
+ *
  * @param q The parameter `q` is of type `Question`, which is a user-defined class. It contains the
  * following member variables:
- * 
+ *
  * @return The function `askQuestion` returns a `std::string` representing the user's answer to the
  * question.
  */
@@ -225,7 +225,7 @@ std::string Client::askQuestion(Question q)
 
 /**
  * The above code snippet is the constructor for a Client class in C++, which initializes various
- * member variables and creates a socket for communication.
+ * member variables and creates a socket for communication..
  */
 Client::Client() : isConnected(false), outfile("LOG.txt", std::ios::trunc), isLogin(false), isAdmin(false)
 {
@@ -271,7 +271,7 @@ void Client::showSubMenu()
             {
                 std::cout << "\n===== Menu =====\n";
                 std::cout << "1. Create New Exam Room\n";
-                std::cout << "2. Update Durationn\n";
+                std::cout << "2. Update Time Duration Room\n";
                 std::cout << "3. View Trace Log System\n";
                 std::cout << "4. Join Room\n";
                 std::cout << "5. View Status Room\n";
@@ -621,35 +621,16 @@ void Client::setExamDuration()
                     ret = true;
                     break;
                 }
+                std::cout << "No Matched Room, Please enter again\n";
             }
-            std::cout << "No Matched Room, Please enter again\n";
         }
     }
-
-    int count = 0;
-    for (int i = 0; i < _size; i++)
-    {
-        if ((strcmp(roomInfo[i].name, nameOfRoom.c_str()) == 0))
-        {
-            send(clientSocket, nameOfRoom.c_str(), strlen(nameOfRoom.c_str()), 0);
-            count++;
-            break;
-        }
-    }
-    if (!count)
-    {
-        std::cout << "No name room match ";
-        std::string req_return = RETURN_MAIN_MENU;
-        send(clientSocket, req_return.c_str(), strlen(req_return.c_str()), 0);
-        return;
-    }
-
-    // send(clientSocket, room.name, sizeof(room.name), 0);
+    send(clientSocket, nameOfRoom.c_str(), strlen(nameOfRoom.c_str()), 0);
 
     std::string timerDurStr;
     while (true)
     {
-        std::cout << "Enter numberOfQuestion: ";
+        std::cout << "Enter new Time Duration: ";
         std::cin >> timerDurStr;
         std::regex pattern("^[0-9]+$");
         if (std::regex_match(timerDurStr, pattern))
@@ -765,7 +746,7 @@ void Client::showMenu()
 /**
  * The above code defines two functions, `login()` and `registerUser()`, for a client to connect to a
  * server, authenticate the user, and register a new user.
- * 
+ *
  * @return The functions `login()` and `registerUser()` are both void functions, so they do not return
  * any value.
  */
@@ -887,7 +868,7 @@ void Client::registerUser()
 /**
  * The `joinRoom()` function allows a client to join an existing room by selecting a room name and
  * providing a participant name.
- * 
+ *
  * @return The function does not have a return type, so it does not return anything.
  */
 void Client::joinRoom()
@@ -967,7 +948,7 @@ void Client::joinRoom()
                     std::string topic(alreadyRoom[i].topic);
                     startExam(joinRoom, numberQuestion, timeDuratiron, topic, alreadyRoom[i].easy,
                               alreadyRoom[i].normal, alreadyRoom[i].difficult, alreadyRoom[i].veryhard);
-                    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+                    // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
                     return;
                 }
@@ -999,7 +980,7 @@ void Client::joinRoom()
  * The function "startExam" receives questions from a server based on a specified topic and difficulty
  * levels, displays the questions to the user, calculates the number of correct answers, and sends the
  * score back to the server.
- * 
+ *
  * @param joinRoom The parameter `joinRoom` is a string that represents the room that the client is
  * joining for the exam.
  * @param numberQuestion The parameter "numberQuestion" represents the total number of questions that
@@ -1015,7 +996,7 @@ void Client::joinRoom()
  * the client wants to include in the exam.
  * @param veryhard The parameter "veryhard" represents the number of very hard level questions that the
  * client wants to include in the exam.
- * 
+ *
  * @return void, which means it is not returning any value.
  */
 void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuration,
@@ -1032,7 +1013,7 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
     int difficult_count = 0;
     int veryhard_count = 0;
     int count = 0;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < _size; ++i)
     {
 
         Question ques;
@@ -1082,7 +1063,7 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
     std::cout << "Your score: " << score << std::endl;
     // std::cout << "joinRoom: " << joinRoom  << std::endl;
     send(clientSocket, &score, sizeof(score), 0);
-    std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+    // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
     return;
 
     // DbSqlite::getInstance()->set_score_room(score, joinRoom);

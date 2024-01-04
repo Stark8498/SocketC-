@@ -95,7 +95,7 @@ struct Room
 #define MAX_SIZE 1000
 #define DB_FILE_NAME "user.db"
 
-#define PORT 8002
+#define PORT 8001
 
 #define LOGIN "login"
 #define REGISTER "register"
