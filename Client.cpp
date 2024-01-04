@@ -179,7 +179,7 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
             }
             else if (choice_change_int == 2)
             {
-                break;
+                return;
             }
         }
         i++;
@@ -621,8 +621,8 @@ void Client::setExamDuration()
                     ret = true;
                     break;
                 }
-                std::cout << "No Matched Room, Please enter again\n";
             }
+            std::cout << "No Matched Room, Please enter again\n";
         }
     }
     send(clientSocket, nameOfRoom.c_str(), strlen(nameOfRoom.c_str()), 0);

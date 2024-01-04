@@ -502,6 +502,7 @@ void Server::handleJoinRoom(int clientSocket)
     if (reqRoom == 1)
     {
         handleStartExam(clientSocket, id_room, strNameUser);
+        return;
     }
     else
     {
@@ -530,8 +531,6 @@ void Server::handleStartExam(int clientSocket, int id_room, std::string user)
               << question.size() << std::endl;
 
     send(clientSocket, &_size, sizeof(_size), 0);
-    int _size_p = 10;
-    send(clientSocket, &_size_p, sizeof(_size_p), 0);
     std::cout << __LINE__ << " : " << __FUNCTION__ << _size << std::endl;
 
     for (size_t i = 0; i < question.size(); i++)
