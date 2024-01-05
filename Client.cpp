@@ -442,8 +442,48 @@ void Client::showSubMenu()
 }
 void Client::createExamRoom()
 {
-    // std::cout << "|Insight create Room";
     Total_room roominfo;
+    std::vector<Question> question_vec;
+    int size_question;
+    recv(clientSocket, &size_question, sizeof(size_question), 0);
+    std::set<std::string> set_topic;
+    for (int i = 0; i < size_question; i++)
+    {
+        Question ques;
+        recv(clientSocket, &ques, sizeof(ques), 0);
+        std::string strTopic(ques.topic);
+
+        // std::cout << strTopic << "\n";
+        set_topic.insert(strTopic);
+        question_vec.push_back(ques);
+    }
+    std::cout << "\n====List topic:====== \n";
+    std::set<std::string>::iterator it;
+    for (it = set_topic.begin(); it != set_topic.end(); ++it)
+    {
+        std::cout << *it << "\n";
+        std::cout << "\n==============\n";
+    }
+
+    std::string strTopic_tmp;
+    do
+    {
+        std::cout << "Enter Topic: ";
+        std::cin >> strTopic_tmp;
+
+        // Kiểm tra xem số có nằm trong set hay không
+        if (set_topic.count(strTopic_tmp) > 0)
+        {
+            break;
+            strcpy(roominfo.topic, strTopic_tmp.c_str());
+        }
+        else
+        {
+            std::cout << "Please enter again\n";
+        }
+    } while (true);
+
+    // std::cout << "|Insight create Room";
     std::cout << "Enter new room name: ";
     std::cin >> roominfo.name;
 
@@ -466,8 +506,6 @@ void Client::createExamRoom()
         }
     }
     roominfo.timeDuration = std::stoi(timerDurationStr);
-    std::cout << "Enter Topic: ";
-    std::cin >> roominfo.topic;
 
     std::string easeStr;
     while (true)

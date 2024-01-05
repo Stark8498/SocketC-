@@ -250,6 +250,16 @@ void Server::handleRegistration(int clientSocket)
 void Server::handleCreateExamRoom(int clientSocket)
 {
     std::cout << "|Insight Create Room\n";
+    std::vector<Question> question_vec;
+    DbSqlite::getInstance()->get_question_info(question_vec);
+    int sizeofQuestion = question_vec.size();
+    send(clientSocket, &sizeofQuestion, sizeof(sizeofQuestion), 0);
+    for (int i = 0; i < question_vec.size(); i++)
+    {
+        Question ques = question_vec[i];
+        send(clientSocket, &ques, sizeof(ques), 0);
+    }
+
     Total_room roominfo;
     std::cout << __LINE__ << std::endl;
     // int timeDuration;
@@ -270,9 +280,9 @@ void Server::handleCreateExamRoom(int clientSocket)
     // std::cout << timeDuration << std::endl;
     int numberQuestion = roominfo.easy + roominfo.normal + roominfo.difficult + roominfo.veryhard;
     DbSqlite::getInstance()->insert_room_data(roominfo);
-    Question questions;
-    for (int i = 1; i < 100; ++i)
-    {
+    // Question questions;
+    // for (int i = 1; i < 100; ++i)
+    // {
         // std::string question = "Question " + std::to_string(i);
         // strncpy(questions.content, question.c_str(), sizeof(questions.content));
         // std::string answerA = "Option A for Question " + std::to_string(i);
@@ -286,94 +296,104 @@ void Server::handleCreateExamRoom(int clientSocket)
 
         // std::string answerD = "Option D for Question " + std::to_string(i);
         // strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-        std::string correctAnswer;
-        std::string topic;
-        topic = roominfo.topic;
-        int level;
-        if (i < 20)
-        {
-            std::string str = "easy";
-            std::string question = "Question " + str + std::to_string(i);
-            strncpy(questions.content, question.c_str(), sizeof(questions.content));
-            std::string answerA = "Option A for Question " + std::to_string(i);
-            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+    //     std::vector<std::string> topic_vec;
+    //     topic_vec.push_back("math");
+    //     topic_vec.push_back("english");
+    //     topic_vec.push_back("literature");
+    //     topic_vec.push_back("physics");
+    //     topic_vec.push_back("chemistry");
+    //     topic_vec.push_back("history");
+    //     for (int i = 0; i < topic_vec.size(); i++)
+    //     {
+    //         std::string correctAnswer;
+    //         std::string topic;
+    //         topic = topic_vec[i];
+    //         int level;
+    //         if (i < 20)
+    //         {
+    //             std::string str = "easy";
+    //             std::string question = "Question " + str + std::to_string(i);
+    //             strncpy(questions.content, question.c_str(), sizeof(questions.content));
+    //             std::string answerA = "Option A for Question " + std::to_string(i);
+    //             strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-            std::string answerB = "Option B for Question " + std::to_string(i);
-            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+    //             std::string answerB = "Option B for Question " + std::to_string(i);
+    //             strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-            std::string answerC = "Option C for Question " + std::to_string(i);
-            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+    //             std::string answerC = "Option C for Question " + std::to_string(i);
+    //             strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-            std::string answerD = "Option D for Question " + std::to_string(i);
-            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-            correctAnswer = "A";
-            level = 0;
-        }
-        else if (i > 20 && i < 40)
-        {
-            std::string str = "normal";
-            std::string question = "Question " + str + std::to_string(i);
-            strncpy(questions.content, question.c_str(), sizeof(questions.content));
-            std::string answerA = "Option A for Question " + std::to_string(i);
-            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+    //             std::string answerD = "Option D for Question " + std::to_string(i);
+    //             strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+    //             correctAnswer = "A";
+    //             level = 0;
+    //         }
+    //         else if (i > 20 && i < 40)
+    //         {
+    //             std::string str = "normal";
+    //             std::string question = "Question " + str + std::to_string(i);
+    //             strncpy(questions.content, question.c_str(), sizeof(questions.content));
+    //             std::string answerA = "Option A for Question " + std::to_string(i);
+    //             strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-            std::string answerB = "Option B for Question " + std::to_string(i);
-            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+    //             std::string answerB = "Option B for Question " + std::to_string(i);
+    //             strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-            std::string answerC = "Option C for Question " + std::to_string(i);
-            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+    //             std::string answerC = "Option C for Question " + std::to_string(i);
+    //             strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-            std::string answerD = "Option D for Question " + std::to_string(i);
-            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-            correctAnswer = "A";
-            level = 1;
-        }
-        else if (i > 40 && i < 60)
-        {
-            std::string str = "difficult";
-            std::string question = "Question " + str + std::to_string(i);
-            strncpy(questions.content, question.c_str(), sizeof(questions.content));
-            std::string answerA = "Option A for Question " + std::to_string(i);
-            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+    //             std::string answerD = "Option D for Question " + std::to_string(i);
+    //             strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+    //             correctAnswer = "A";
+    //             level = 1;
+    //         }
+    //         else if (i > 40 && i < 60)
+    //         {
+    //             std::string str = "difficult";
+    //             std::string question = "Question " + str + std::to_string(i);
+    //             strncpy(questions.content, question.c_str(), sizeof(questions.content));
+    //             std::string answerA = "Option A for Question " + std::to_string(i);
+    //             strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-            std::string answerB = "Option B for Question " + std::to_string(i);
-            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+    //             std::string answerB = "Option B for Question " + std::to_string(i);
+    //             strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-            std::string answerC = "Option C for Question " + std::to_string(i);
-            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+    //             std::string answerC = "Option C for Question " + std::to_string(i);
+    //             strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-            std::string answerD = "Option D for Question " + std::to_string(i);
-            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-            correctAnswer = "C";
-            level = 2;
-        }
-        else
-        {
-            std::string str = "veryhard";
-            std::string question = "Question " + str + std::to_string(i);
-            strncpy(questions.content, question.c_str(), sizeof(questions.content));
-            std::string answerA = "Option A for Question " + std::to_string(i);
-            strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+    //             std::string answerD = "Option D for Question " + std::to_string(i);
+    //             strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+    //             correctAnswer = "C";
+    //             level = 2;
+    //         }
+    //         else
+    //         {
+    //             std::string str = "veryhard";
+    //             std::string question = "Question " + str + std::to_string(i);
+    //             strncpy(questions.content, question.c_str(), sizeof(questions.content));
+    //             std::string answerA = "Option A for Question " + std::to_string(i);
+    //             strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
 
-            std::string answerB = "Option B for Question " + std::to_string(i);
-            strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+    //             std::string answerB = "Option B for Question " + std::to_string(i);
+    //             strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
 
-            std::string answerC = "Option C for Question " + std::to_string(i);
-            strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+    //             std::string answerC = "Option C for Question " + std::to_string(i);
+    //             strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
 
-            std::string answerD = "Option D for Question " + std::to_string(i);
-            strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-            correctAnswer = "B";
-            level = 3;
-        }
+    //             std::string answerD = "Option D for Question " + std::to_string(i);
+    //             strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+    //             correctAnswer = "B";
+    //             level = 3;
+    //         }
 
-        strncpy(questions.correctAnswer, correctAnswer.c_str(), sizeof(questions.correctAnswer));
-        strncpy(questions.topic, topic.c_str(), sizeof(questions.topic));
-        questions.level = level;
+    //         strncpy(questions.correctAnswer, correctAnswer.c_str(), sizeof(questions.correctAnswer));
+    //         strncpy(questions.topic, topic.c_str(), sizeof(questions.topic));
+    //         questions.level = level;
 
-        // std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
-        DbSqlite::getInstance()->insert_question_data(questions);
-    }
+    //         // std::cout << __LINE__ << ": " << __FUNCTION__ << "\n";
+    //         DbSqlite::getInstance()->insert_question_data(questions);
+    //     }
+    // }
 }
 
 void Server::handleSetNumberOfQuestions(int clientSocket)
