@@ -1,2 +1,11 @@
 ---Hello, init Client, start log----
 Server response: Connection established. Welcome to the server!
+Create New Room OKJoin room Successfull
+Number of correct answers: 1/5
+|Status room :Already for test
+|Status room :Already for test
+|Status room :Already for test
+Result Room: 
+room1: phuc: 0
+Result Room: 
+room2: phuc: 2

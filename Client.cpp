@@ -42,10 +42,10 @@ void Client::showTest(std::vector<Question> question, int timeDuration, int numb
     srand(time(0));
 
     // Question questions[5];
-    // std::cout << "Start Question Test"
-    //           << "|numberQuestion: " << numberQuestion
-    //           << "|question SIZE: " << question.size()
-    //           << "|timeDuration: " << timeDuration << std::endl;
+    std::cout << "Start Question Test"
+              << "|numberQuestion: " << numberQuestion
+              << "|question SIZE: " << question.size()
+              << "|timeDuration: " << timeDuration << std::endl;
     correctAnswers = 0;
     time_t startTime = time(0);
     time_t elapsedTime;
@@ -474,8 +474,8 @@ void Client::createExamRoom()
         // Kiểm tra xem số có nằm trong set hay không
         if (set_topic.count(strTopic_tmp) > 0)
         {
-            break;
             strcpy(roominfo.topic, strTopic_tmp.c_str());
+            break;
         }
         else
         {
@@ -1043,7 +1043,14 @@ void Client::startExam(std::string joinRoom, int numberQuestion, int timeDuratio
 
     int _size;
     recv(clientSocket, &_size, sizeof(_size), 0);
-    // std::cout << __LINE__ << " : " << __FUNCTION__ << "|size_vec: " << _size << "|topic:" << topic << std::endl;
+    std::cout << __LINE__ << " : " << __FUNCTION__ 
+    << "|size_vec: " << _size 
+    << "|topic: " << topic 
+    << "|easy: " << easy 
+    << "|normal: " << normal 
+    << "|difficult: " << difficult 
+    << "|veryhard: " << veryhard 
+    << "|topic:" << topic << std::endl;
 
     std::vector<Question> question;
     int easy_count = 0;

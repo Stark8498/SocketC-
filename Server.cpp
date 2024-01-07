@@ -252,6 +252,48 @@ void Server::handleCreateExamRoom(int clientSocket)
     std::cout << "|Insight Create Room\n";
     std::vector<Question> question_vec;
     DbSqlite::getInstance()->get_question_info(question_vec);
+    int count0 = 0;
+    int count1 = 0;
+    int count2 = 0;
+    int count3 = 0;
+
+    for (int i = 0; i < question_vec.size(); i++)
+    {
+        if (strcmp(question_vec[i].topic, "math") == 0)
+        {
+            if (question_vec[i].level = 0)
+            {
+                count0++;
+            }
+        }
+        if (strcmp(question_vec[i].topic, "math") == 0)
+        {
+            if (question_vec[i].level = 1)
+            {
+                count1++;
+            }
+        }
+        if (strcmp(question_vec[i].topic, "math") == 0)
+        {
+            if (question_vec[i].level = 2)
+            {
+                count2++;
+            }
+        }
+        if (strcmp(question_vec[i].topic, "math") == 0)
+        {
+            if (question_vec[i].level = 3)
+            {
+                count3++;
+            }
+        }
+    }
+    std::cout << "|number math: "
+              << "| count0: " << count0
+              << "| count1: " << count1
+              << "| count2: " << count2
+              << "| count3: " << count3;
+
     int sizeofQuestion = question_vec.size();
     send(clientSocket, &sizeofQuestion, sizeof(sizeofQuestion), 0);
     for (int i = 0; i < question_vec.size(); i++)
@@ -281,33 +323,34 @@ void Server::handleCreateExamRoom(int clientSocket)
     int numberQuestion = roominfo.easy + roominfo.normal + roominfo.difficult + roominfo.veryhard;
     DbSqlite::getInstance()->insert_room_data(roominfo);
     // Question questions;
-    // for (int i = 1; i < 100; ++i)
+    // std::vector<std::string> topic_vec;
+    // topic_vec.push_back("math");
+    // topic_vec.push_back("english");
+    // topic_vec.push_back("literature");
+    // topic_vec.push_back("physics");
+    // topic_vec.push_back("chemistry");
+    // topic_vec.push_back("history");
+    // for (int z = 0; z < topic_vec.size(); z++)
     // {
-        // std::string question = "Question " + std::to_string(i);
-        // strncpy(questions.content, question.c_str(), sizeof(questions.content));
-        // std::string answerA = "Option A for Question " + std::to_string(i);
-        // strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
-
-        // std::string answerB = "Option B for Question " + std::to_string(i);
-        // strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
-
-        // std::string answerC = "Option C for Question " + std::to_string(i);
-        // strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
-
-        // std::string answerD = "Option D for Question " + std::to_string(i);
-        // strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
-    //     std::vector<std::string> topic_vec;
-    //     topic_vec.push_back("math");
-    //     topic_vec.push_back("english");
-    //     topic_vec.push_back("literature");
-    //     topic_vec.push_back("physics");
-    //     topic_vec.push_back("chemistry");
-    //     topic_vec.push_back("history");
-    //     for (int i = 0; i < topic_vec.size(); i++)
+    //     for (int i = 1; i < 100; ++i)
     //     {
+    //         std::string question = "Question " + std::to_string(i);
+    //         strncpy(questions.content, question.c_str(), sizeof(questions.content));
+    //         std::string answerA = "Option A for Question " + std::to_string(i);
+    //         strncpy(questions.choices1, answerA.c_str(), sizeof(questions.choices1));
+
+    //         std::string answerB = "Option B for Question " + std::to_string(i);
+    //         strncpy(questions.choices2, answerB.c_str(), sizeof(questions.choices2));
+
+    //         std::string answerC = "Option C for Question " + std::to_string(i);
+    //         strncpy(questions.choices3, answerC.c_str(), sizeof(questions.choices3));
+
+    //         std::string answerD = "Option D for Question " + std::to_string(i);
+    //         strncpy(questions.choices4, answerD.c_str(), sizeof(questions.choices4));
+
     //         std::string correctAnswer;
     //         std::string topic;
-    //         topic = topic_vec[i];
+    //         topic = topic_vec[z];
     //         int level;
     //         if (i < 20)
     //         {
@@ -546,20 +589,46 @@ void Server::handleStartExam(int clientSocket, int id_room, std::string user)
     std::vector<Question> question;
     DbSqlite::getInstance()->get_question_info(question);
     int _size = question.size();
+    // if (_size > 50)
+    // {
+    //     _size = 20;
+    // }
 
     std::cout << __LINE__ << " : " << __FUNCTION__ << "|question.size(): "
-              << question.size() << std::endl;
+              << _size << std::endl;
 
     send(clientSocket, &_size, sizeof(_size), 0);
     std::cout << __LINE__ << " : " << __FUNCTION__ << _size << std::endl;
-
-    for (size_t i = 0; i < question.size(); i++)
+    int count_0, count_1, count_2, coutn_3;
+    for (size_t i = 0; i < _size; i++)
     {
-        std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
+        if (question[i].level == 0)
+        {
+            count_0++;
+        }
+        else if (question[i].level == 1)
+        {
+            count_1++;
+        }
+        else if (question[i].level == 2)
+        {
+            count_2++;
+        }
+        else if (question[i].level == 3)
+        {
+            coutn_3++;
+        }
+
+        // std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
 
         Question ques = question[i];
         send(clientSocket, &ques, sizeof(ques), 0);
     }
+    std::cout << "|count1: " << count_1
+              << "|count 2: " << count_2
+              << "|count 3: " << coutn_3
+              << "|count 0: " << count_0;
+
     std::cout << __LINE__ << " : " << __FUNCTION__ << std::endl;
     int score;
     recv(clientSocket, &score, sizeof(score), 0);

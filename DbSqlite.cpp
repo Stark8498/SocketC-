@@ -307,7 +307,8 @@ bool DbSqlite::insert_question_data(Question &question)
  */
 int DbSqlite::insert_room_data(Total_room &room)
 {
-    std::cout << __LINE__ << __FUNCTION__ << std::endl;
+    std::cout << __LINE__ << __FUNCTION__ 
+    << "|room topic: " << room.topic  << std::endl;
 
     int ret;
     if (db_ready)

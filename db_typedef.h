@@ -38,7 +38,7 @@
                                         "NORMAL INT ,"\
                                         "DIFFICULT INT , "\
                                         "VERYHARD INT ,"\
-                                        "TOPIC INT ," \                                     
+                                        "TOPIC TEXT ," \                                     
                                         "ROOMNAME VARCHAR(255) NOT NULL UNIQUE);  "
 
 #define  CREATE_INFO_ROOM       "CREATE TABLE INFOROOM ( "\
